@@ -60,7 +60,7 @@ A *run_values* file is created to define the experiment names and parameter valu
 
 Note that this setup runs a *positive perturbation* experiment (*high* values) and a *negative perturbation* experiment. If the above model is linear (or very nearly linear), these experiments will produce the same answer, if there are non-linearities then we might expect different feedback response for a positive and negative perturbation (e.g. reducing total mass might push the atmosphere below a threshold for seasonal collapse that increasing the mass would never reach).
 
-This experiment list is used to generate 11 directories and run the experiments with the python script called *runscript.py* in the *simulations* directory. The result of this code will be to create all 11 directories, and print to **STDOUT** a startup runscript to start each simulation (on Pleiades). Either pipe this script to a file and execute or copy the screen output and paste into the terminal.
+This experiment list is used to generate 11 directories and run the experiments with the python script called `runscript.py` in the *simulations* directory. The result of this code will be to create all 11 directories, and print to **STDOUT** a startup runscript to start each simulation (on Pleiades). Either pipe this script to a file and execute or copy the screen output and paste into the terminal.
 
 The key to perturbing each experiment is the format of the *namelist.input* file. An extract of which looks like
 
@@ -70,34 +70,34 @@ The key to perturbing each experiment is the format of the *namelist.input* file
     nh_co2ice_emiss                     = {nh_co2ice_emiss}
     /
 
-The braced words are used by python and replaced with values. Each *row* of the asciitable *data* is converted into a dictionary with keys matching the table header, and values from each data row. In the script the namelist is first read into a string, then the string is *format*ted by being given this dictionary as keyword arguments (the .format(**d_row) incantation). For each braced string in the namelist file, an equivalently named key is found and its value inserted in the namelist string, which is then written back to the file.
+The braced words are used by python and replaced with values. Each *row* of the asciitable *run_values* is converted into a dictionary with keys matching the table header and values from each data row. In the script the namelist is first read into a string, then the string is formatted by being given this dictionary as keyword arguments (the .format(\*\*d_row) incantation). For each braced string in the namelist file, an equivalently named key is found and its value inserted in the namelist string, which is then written back to the file.
 
-then you wait...
+The second step of running the GCMs is up to you, but a naive runscript is output to the screen (or you can pipe to a file) when you run `runscript.py`.
 
 ### Post-processing
 
 After the simulations are complete, we need to extract the surface pressure at the Viking Lander locations, and the *aerocentric longitude* L_s. The Python script viking_lander.py can be used to perform this calculation on multiple files if called as
 
-    python viking_lander.py list_of_input_files --output output_file
+    ./viking_lander.py list_of_input_files --output output_file
     (e.g.) 
-    python viking_lander.py wrfout* --output vl.data
+    ./viking_lander.py wrfout* --output vl.data
 
-This will produce an ascii data file containing three comma separated columns of L_s, adjusted surface pressure at VL1, and adjusted surface pressure at VL2. For each time sample in the file, the code reads in the surface pressure nearest to the lander sites, bilinearly interpolates to the landing site location, and adjusts the surface pressure from the model surface altitude to the 'known' lander altitude to account for the relatively low model resolution.
+This will produce an ascii data file containing three comma separated columns of L_s, adjusted surface pressure at VL1, and adjusted surface pressure at VL2. For each time sample in the file, the code reads in the surface pressure nearest to the lander sites, bilinearly interpolates to the landing site location, and adjusts the surface pressure from the model surface altitude to the 'known' lander altitude to account for the relatively low model resolution. (There could/should be a Makefile to control this process, but the inability of *make* to work with colons (:) in filenames and WRFs use of them to delimit times is terminal).
 
 ### Fitting
 
 Once all of the model simulations are complete and post-processed the data can be used in the fitting model to find the statistically optimum values of each parameter. To fit the model parameters we take five perturbation simulations, the reference baseline, and the target pressure cycle and calculate the Jacobian (J) above using the 5 perturbation simulations, the target deltaP from the target pressure and reference pressure. Then we use a Python subroutine to calculate the parameters that minimize the sum of the squared errors between between the target deltaP and the J.dx. 
 
-The Python code that performs this minimization is separated into three programs. Two to find the harmonic fits to the simulated *or* observed pressure cycle ( `fit_to_ls_grid.py` and `fit_viking_data.py` ), and one to calculate the state vector that gives the LMSE residual ( `fit_parameters.py` ) given these harmonic fits. A `Makefile` is used to control the fitting process to reduce the duplication of the calling the fitting routines. Calling `make` alone should produce a fit to the Viking Lander 1 year 2&3 data if the source data is available.
+The Python code that performs this minimization is separated into three programs. Two to find the harmonic fits to the simulated *or* observed pressure cycle ( `fit_to_ls_grid.py` and `fit_viking_data.py` ), and one to calculate the state vector that gives the LMSE residual ( `fit_parameters.py` ) given these harmonic fits.
 
-The harmonic fitting functions are essentially the same, but deal with two formats. The format output by the simulation post-processing code ( `viking_lander.py` ) is processed by the `fit_to_ls_grid.py` code, which reads in the entire file, optionally using only a segment of the code (given by `--startrow` and `--stoprow ) and fits a function composed of a mean value and `--nmodes` harmonic modes. The result of calling this function will be a new **fit** file with three columns, the mode ordinal number (from 0 to 2\*nmodes ) where n=1,3,5,7,9 are the amplitudes of the sin((n+1)/2) mode, and n=2,4,6,8,10 are the phases in degrees of the n/2 mode. The second and third column contain the fitted parameter to the VL1 and VL2 data from the input file.
+The harmonic fitting functions are essentially the same, but deal with two formats. The format output by the simulation post-processing code ( `viking_lander.py` ) is processed by the `fit_to_ls_grid.py` code, which reads in the entire file, optionally using only a segment of the results (given by `--startrow` and `--stoprow` ) and fits a function composed of a mean value and `--nmodes` harmonic modes. The result of calling this function will be a new *.fit* file with three columns, the mode ordinal number (from 0 to 2\*nmodes ) where n=1,3,5,7,9 are the amplitudes of the sin((n+1)/2) mode, and n=2,4,6,8,10 are the phases in degrees of the sin(n/2) mode. The second and third column contain the fitted parameter to the VL1 and VL2 data from the input file.
 
     e.g. 
-	./python/fit_to_ls_grid.py --startrow=600 --stoprow=1200 --nmodes=5 input.data output.fit
+	./python/fit_to_ls_grid.py --startrow=600 --stoprow=1300 --nmodes=5 input.data output.fit
 
-will read the data from *input.data* extract lines 600:1200, fit a 5 harmonic function and output the results in output.fit
+will read the data from *input.data* extract lines 600:1300, fit a 5 harmonic function and output the results in output.fit
 
-The Viking lander code in `fit_viking_data.py` performs the same function, but reads the particular form of the vl\_p.dat file from [PDS][2]. In this format, the VL1 and VL2 datasets are in the same format, with the lander name as one of the columns, and pressure is given in mbars (or equivalently hPa), instead of Pa as in the GCM. The `fit_viking_data.py` optionally takes a comma separated list of years in `--vl1years` and `--vl2years` to select different years to fit. The default of `--vl1years=2,3 --vl2years=2` is chosen to use three relatively dust-storm free data.
+The Viking lander code in `fit_viking_data.py` performs the same function, but reads the particular form of the vl\_p.dat file from [PDS][2]. In this format, the VL1 and VL2 datasets are in the same format, with the lander name as one of the columns, and pressure is given in mbars (or equivalently hPa), instead of Pa as in the GCM. The `fit_viking_data.py` optionally takes a comma separated list of years in `--vl1years` and `--vl2years` to select different years to fit. The default of `--vl1years=2,3 --vl2years=2` is chosen to use three relatively dust-storm free years.
  
     e.g.
 	./python/fit_viking_data.py --vl1years=2,3 --vl2years=2 --nmodes=5 input.pds output.fit
@@ -137,7 +137,7 @@ produces a files similar to this
 The output.parameter in the above example contains just the parameter table (that appears in the header above) as a readable table without the fitted pressure data.
 
 ### Makefile
-To simplify the post-processing, the makefile in the main directory can be used to automatically run this code (if the input filenames are correct). Called `make clean` will remove all generated files, `make all` will perform a fit of VL1 data using the low and high perturbations, `make -j 8 all -e lander=vl2` will do the same for VL2 data using 8 processes. Calling `make -B fit/planetWRF.run.fit` will unconditionally remake the harmonic fit of the base run. The simplest use of `make` will run the default rule (equivalent to `make all`) that will fit the VL1 data using low and high perturbation experiments.
+To simplify the post-processing, the makefile in the main directory can be used to automatically run this code (if the input filenames are correct). Calling `make clean` will remove all generated files, `make all` will perform a fit of VL1 data using the low and high perturbations separately, `make -j 8 all -e lander=vl2` will do the same for VL2 data using 8 processes. Calling `make -B fit/planetWRF.run.fit -e stoprow=900 startrow=300 verbose=1` will unconditionally remake the harmonic fit of the base run and print the command that is executed. The simplest use of `make` will run the default rule (equivalent to `make all`) that will fit the VL1 data using low and high perturbation experiments.
 
  [1]: https://github.com/ashima/planetWRF/commit/3017e40f894d23e3e4d432bd6b51ab0de98b0153
  [2]: http://starbase.jpl.nasa.gov/vl1-m-met-4-binned-p-t-v-corr-v1.0/vl_1001/data/
