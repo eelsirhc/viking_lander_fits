@@ -1,7 +1,7 @@
 filename, co2, sh_albedo, sh_emiss, nh_albedo, nh_emiss
-data/planetWRF.run.fit,                1.0, 0.461, 0.785, 0.795, 0.485
-data/planetWRF.co2_high.run.fit,       1.035, 0.461, 0.785, 0.795, 0.485    
-data/planetWRF.sh_albedo_high.run.fit, 1.0, 0.491, 0.785, 0.795, 0.485
-data/planetWRF.sh_emiss_high.run.fit,  1.0, 0.461, 0.815, 0.795, 0.485
-data/planetWRF.nh_albedo_high.run.fit, 1.0, 0.461, 0.785, 0.825, 0.485
-data/planetWRF.nh_emiss_high.run.fit,  1.0, 0.461, 0.785, 0.795, 0.515
+fit/planetWRF.run.fit,                1.0, 0.461, 0.785, 0.795, 0.485
+fit/planetWRF.co2_high.run.fit,       1.035, 0.461, 0.785, 0.795, 0.485    
+fit/planetWRF.sh_albedo_high.run.fit, 1.0, 0.491, 0.785, 0.795, 0.485
+fit/planetWRF.sh_emiss_high.run.fit,  1.0, 0.461, 0.815, 0.795, 0.485
+fit/planetWRF.nh_albedo_high.run.fit, 1.0, 0.461, 0.785, 0.825, 0.485
+fit/planetWRF.nh_emiss_high.run.fit,  1.0, 0.461, 0.785, 0.795, 0.515
