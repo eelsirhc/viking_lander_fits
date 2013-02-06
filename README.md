@@ -114,8 +114,30 @@ To call the parameter fitting code *fit_parameters.py* a file containng the expe
     fit/planetWRF.nh_albedo_low.run.fit,  1.0, 0.461, 0.785, 0.765, 0.485
     fit/planetWRF.nh_emiss_low.run.fit,   1.0, 0.461, 0.785, 0.795, 0.435
 
-where the first row gives the column names that correspond to the parameters being perturbed, and the body of the data contains the actual values of parameters used (not their perturbations).
+where the first row gives the column names that correspond to the parameters being perturbed, and the body of the data contains the actual values of parameters used (not their perturbations). This file is used to read in each *.fit* file, construct a deltaP and deltaX from the base state (the first row), and J=deltaP/deltaX . The Python least square fitting algorithm **scipy.linalg.lstsq** is then used to find the LMSE optimum state vector perturbation dx . This state vector perturbation is used to construct a best fit pressure cycle (and residuals) for both VL1 and VL2, which are output in a final *.fit* file with the new parameter values contained in the header, and the fitted pressure cycle in the body of the table, e.g. called as
 
+    ./python/fit_parameters.py --lander=vl1 data/fit_low.parameters fit/viking.fit output.parameter output
+
+produces a files similar to this
+
+    #Best fit pressure curve to vl1 data
+    #Parameter fit to best reproduce vl1 data
+    #names,basevalue,perturbation,newvalue
+    #co2,1.0,0.0148,1.0148
+    #sh_albedo,0.461,-0.0347,0.4263
+    #sh_emiss,0.785,0.1456,0.9306
+    #nh_albedo,0.795,-0.0354,0.7596
+    #nh_emiss,0.485,-0.3009,0.1841
+	#NOTE THESE EXAMPLE VALUES ARE NOT USEFUL
+    L_S,vl1,vl2,res_vl1,res_vl2
+    0,812.505565331,901.793299665,-8.28206091811,-19.2443976334
+    1,812.742683939,902.915796375,-8.33971138839,-20.1599371335
+    ....
+
+The output.parameter in the above example contains just the parameter table (that appears in the header above) as a readable table without the fitted pressure data.
+
+### Makefile
+To simplify the post-processing, the makefile in the main directory can be used to automatically run this code (if the input filenames are correct). Called `make clean` will remove all generated files, `make all` will perform a fit of VL1 data using the low and high perturbations, `make all -e lander=vl2` will do the same for VL2 data. Calling `make -B fit/planetWRF.run.fit` will unconditionally remake the harmonic fit of the base run. The simplest use of `make` will run the default rule (equivalent to `make all`) that will fit the VL1 data using low and high perturbation experiments. 
 
  [1]: https://github.com/ashima/planetWRF/commit/3017e40f894d23e3e4d432bd6b51ab0de98b0153
  [2]: http://starbase.jpl.nasa.gov/vl1-m-met-4-binned-p-t-v-corr-v1.0/vl_1001/data/
