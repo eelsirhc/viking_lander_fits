@@ -39,8 +39,7 @@ Using the current version of WRF 331 (at least changeset [@3017e40][1]) the name
     runscript.wrf
     transfer.log
     wrf.exe
-    
-
+ 
 where *ideal.single* is a serial version of ideal.exe (and is less annoying to run on the NASA cluster).
 
 A *run_values* file is created to define the experiment names and parameter values
@@ -57,7 +56,7 @@ A *run_values* file is created to define the experiment names and parameter valu
     sh_emiss_high, 2.939e16, 0.461, 0.815, 0.795, 0.485
     nh_albedo_high,2.939e16, 0.461, 0.785, 0.825, 0.485
     nh_emiss_high, 2.939e16, 0.461, 0.785, 0.795, 0.515
-    
+
 
 Note that this setup runs a *positive perturbation* experiment (*high* values) and a *negative perturbation* experiment. If the above model is linear (or very nearly linear), these experiments will produce the same answer, if there are non-linearities then we might expect different feedback response for a positive and negative perturbation (e.g. reducing total mass might push the atmosphere below a threshold for seasonal collapse that increasing the mass would never reach).
 
@@ -70,7 +69,6 @@ The key to perturbing each experiment is the format of the *namelist.input* file
     nh_co2ice_albedo                    = {nh_co2ice_albedo}
     nh_co2ice_emiss                     = {nh_co2ice_emiss}
     /
-    
 
 The braced words are used by python and replaced with values. Each *row* of the asciitable *data* is converted into a dictionary with keys matching the table header, and values from each data row. In the script the namelist is first read into a string, then the string is *format*ted by being given this dictionary as keyword arguments (the .format(**d_row) incantation). For each braced string in the namelist file, an equivalently named key is found and its value inserted in the namelist string, which is then written back to the file.
 
@@ -83,11 +81,13 @@ After the simulations are complete, we need to extract the surface pressure at t
     python viking_lander.py list_of_input_files --output output_file
     (e.g.) 
     python viking_lander.py wrfout* --output vl.data
-    
+
 This will produce an ascii data file containing three comma separated columns of L_s, adjusted surface pressure at VL1, and adjusted surface pressure at VL2. For each time sample in the file, the code reads in the surface pressure nearest to the lander sites, bilinearly interpolates to the landing site location, and adjusts the surface pressure from the model surface altitude to the 'known' lander altitude to account for the relatively low model resolution.
 
 ### Fitting
 
-Once all of the model simulations are complete and post-processed the data can be used in the fitting model to find the statistically optimum values of each parameter.
+Once all of the model simulations are complete and post-processed the data can be used in the fitting model to find the statistically optimum values of each parameter. To fit the model parameters we take five perturbation simulations, the reference baseline, and the target pressure cycle and calculate the Jacobian (J) above using the 5 perturbation simulations, the target deltaP from the target pressure and reference pressure. Then we use a Python subroutine to calculate the parameters that minimize the sum of the squared errors between between the target deltaP and the J.dx. 
+
+The Python code that performs this minimization is separated into three programs. Two to find the harmonic fits to the simulated *or* observed pressure cycle (*fit_to_ls_grid.py* and *fit_viking_data.py*), and one to calculate the state vector that gives the LMSE residual (*fit_parameters.py*) given these harmonic fits. A *Makefile* is used to control the fitting process to reduce the duplication of the calling the fitting routines. Calling `make` alone should produce a fit to the Viking Lander 1 year 2&3 data if the source data is available.
 
  [1]: https://github.com/ashima/planetWRF/commit/3017e40f894d23e3e4d432bd6b51ab0de98b0153
