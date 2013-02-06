@@ -26,7 +26,7 @@ lander = vl1
 
 #the final output filenam
 viking_fit_low = $(fit)/$(lander).low.fit
-viking_fit_high = $(fit)/$(lander).high.fit 
+viking_fit_high = $(fit)/$(lander).high.fit
 
 #the start of the data to extract from the GCM output, used to skip initial relaxation
 startrow=600
@@ -47,24 +47,24 @@ all: $(viking_fit_low) $(viking_fit_high)
 #the GCM pressure.
 $(viking_fit_low) :  $(fit_data_low) $(viking_fit) $(fit_baseline)
 	@echo "Fitting parameters using low perturbation data"
-	./fit_parameters.py --lander=$(lander) $(low_parameter_file) ${viking_fit} $@.parameter $@
+	./python/fit_parameters.py --lander=$(lander) $(low_parameter_file) ${viking_fit} $@.parameter $@
 
 #as viking_fit_low, but for high perturbations
 $(viking_fit_high) : $(fit_data_high) $(viking_fit) $(fit_baseline)
 	@echo "Fitting parameters using high perturbation data"
-	./fit_parameters.py --lander=$(lander) $(high_parameter_file) ${viking_fit} $@.parameter $@
+	./python/fit_parameters.py --lander=$(lander) $(high_parameter_file) ${viking_fit} $@.parameter $@
 
 #To construct the Viking fit data, we need to extract data from the PDS dataset stored in the data directory
 #In this case we extract VL1 years 2 and 3, and VL2 year 2 only. This are fitted using the harmonic function.
 $(viking_fit) : $(viking_data)
 	@echo "Fitting Viking data using $(nmodes) harmonic modes"
-	@./fit_viking_data.py --vl1years=2,3 --vl2years=2 --nmodes=$(nmodes) $< $@
+	@./python/fit_viking_data.py --vl1years=2,3 --vl2years=2 --nmodes=$(nmodes) $< $@
 
 #Generic rule, for a required fit file, we need the equivalent data file
 #we take the data file and fit the harmonic function of nmodes to it
 fit/%.fit : data/%.data
-	@echo "Fitting $< using $(nmodes) harmonic modes" $< $@
-	@./fit_to_ls_grid.py --startrow=$(startrow) --stoprow=$(stoprow) --nmodes=$(nmodes) $< $@
+	@echo "Fitting $< using $(nmodes) harmonic modes"
+	@./python/fit_to_ls_grid.py --startrow=$(startrow) --stoprow=$(stoprow) --nmodes=$(nmodes) $< $@
 
 #remove fit files.
 clean: 
@@ -73,4 +73,7 @@ clean:
 			$(fit_data_baseline)\
 			$(viking_fit)\
 			$(viking_fit_low)\
-			$(viking_fit_high)
+			$(viking_fit_high)\
+			$(fit_baseline)\
+			$(viking_fit_low).parameter\
+			$(viking_fit_high).parameter
