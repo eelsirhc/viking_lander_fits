@@ -47,7 +47,7 @@ all: $(viking_fit_low) $(viking_fit_high)
 #the GCM pressure.
 $(viking_fit_low) :  $(fit_data_low) $(viking_fit) $(fit_baseline)
 	@echo "Fitting parameters using low perturbation data"
-	./python/fit_parameters.py --lander=$(lander) $(low_parameter_file) ${viking_fit} $@.parameter $@
+	@./python/fit_parameters.py --lander=$(lander) $(low_parameter_file) ${viking_fit} $@.parameter $@
 
 #as viking_fit_low, but for high perturbations
 $(viking_fit_high) : $(fit_data_high) $(viking_fit) $(fit_baseline)

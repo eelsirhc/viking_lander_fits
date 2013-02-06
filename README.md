@@ -137,7 +137,7 @@ produces a files similar to this
 The output.parameter in the above example contains just the parameter table (that appears in the header above) as a readable table without the fitted pressure data.
 
 ### Makefile
-To simplify the post-processing, the makefile in the main directory can be used to automatically run this code (if the input filenames are correct). Called `make clean` will remove all generated files, `make all` will perform a fit of VL1 data using the low and high perturbations, `make all -e lander=vl2` will do the same for VL2 data. Calling `make -B fit/planetWRF.run.fit` will unconditionally remake the harmonic fit of the base run. The simplest use of `make` will run the default rule (equivalent to `make all`) that will fit the VL1 data using low and high perturbation experiments. 
+To simplify the post-processing, the makefile in the main directory can be used to automatically run this code (if the input filenames are correct). Called `make clean` will remove all generated files, `make all` will perform a fit of VL1 data using the low and high perturbations, `make -j 8 all -e lander=vl2` will do the same for VL2 data using 8 processes. Calling `make -B fit/planetWRF.run.fit` will unconditionally remake the harmonic fit of the base run. The simplest use of `make` will run the default rule (equivalent to `make all`) that will fit the VL1 data using low and high perturbation experiments.
 
  [1]: https://github.com/ashima/planetWRF/commit/3017e40f894d23e3e4d432bd6b51ab0de98b0153
  [2]: http://starbase.jpl.nasa.gov/vl1-m-met-4-binned-p-t-v-corr-v1.0/vl_1001/data/
