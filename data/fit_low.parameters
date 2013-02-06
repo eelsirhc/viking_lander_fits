@@ -1,0 +1,8 @@
+filename, co2, sh_albedo, sh_emiss, nh_albedo, nh_emiss
+data/planetWRF.run.fit,                1.0, 0.461, 0.785, 0.795, 0.485
+data/planetWRF.co2_low.run.fit,        0.965, 0.461, 0.785, 0.795, 0.485
+data/planetWRF.sh_albedo_low.run.fit,  1.0, 0.431, 0.785, 0.795, 0.485
+data/planetWRF.sh_emiss_low.run.fit,   1.0, 0.461, 0.755, 0.795, 0.485
+data/planetWRF.nh_albedo_low.run.fit,  1.0, 0.461, 0.785, 0.765, 0.485
+data/planetWRF.nh_emiss_low.run.fit,   1.0, 0.461, 0.785, 0.795, 0.435
+

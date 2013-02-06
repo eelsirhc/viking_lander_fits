@@ -1,0 +1,9 @@
+*.png
+*~
+*.pyc
+*.tar.gz
+\#*
+
+#created files
+*.fit
+*.fit.parameter
