@@ -1,0 +1,5 @@
+#These are the required packages for the Python scripts to run.
+asciitable
+netCDF4
+numpy
+scipy

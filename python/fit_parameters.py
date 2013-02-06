@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 #Christopher Lee, Ashima Research, 2013
 import numpy
-#import asciitable
 import argparse
-#from argh import ArghParser,command, arg
-#from glob import glob
-#import os
-#import pylab as pl
-#from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from scipy import optimize, linalg
 from fit_core import *
 

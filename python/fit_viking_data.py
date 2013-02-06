@@ -8,8 +8,6 @@ from argh import ArghParser,command, arg
 from glob import glob
 from ordereddict import OrderedDict as odict
 import os
-import pylab as pl
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from fit_core import *
 
 def fit_viking_data(input_file, vl1years="2,3",  vl2years="2", nmodes=5):
