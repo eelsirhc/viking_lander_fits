@@ -10,7 +10,7 @@ high = $(wildcard $(data)/*high*.data)
 
 #viking lander data
 viking_data = $(data)/vl_p.dat
-viking_fit = $(data)/viking.fit
+viking_fit = $(fit)/viking.fit
 
 #files describing the perturbations made in each experiment
 low_parameter_file = $(data)/fit_low.parameters
