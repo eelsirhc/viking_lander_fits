@@ -15,18 +15,18 @@ From prior experiments (Guo et al., 2009), the best fit values for WRF 3.0.1.2 w
 
 To generate these fits, a linear(izable) model is assumed to exist for the relationship between the pressure value measured at the Viking Lander sites (notably, **VL1**) and the 5 parameter values defined above. The model is then generated as
 
-P(x) = P(x0) + dP/dx . dx 
+    P(x) = P(x0) + dP/dx . dx 
 
 where x0 represents the state vector of the five parameters above, P(x) is the surface pressure, and P(x0) a reference base state about which we linearize. If our target P(x) is the observed Viking lander pressure, then
 
-P(x) - P(x0) = dP/dx . dx
-deltaP = Jp . dx
+    P(x) - P(x0) = dP/dx . dx
+    deltaP = Jp . dx
 
 and deltaP is the difference between our base state and our target state, J_p is the sensitivity matrix (the *Jacobian*) relating changes in the state vector to changes in the pressure, and dx is the change in the state vector from the reference state required to produce the deltaP.
 
 We can find Jp by running 6 simulations, including 1 baseline experiment and 1 perturbed experiment for each state parameter. The baseline experiment provides dual service as P0 and in Jp as
 
-Jp = (P' - P0)/(x' - x0)
+    Jp = (P' - P0)/(x' - x0)
 
 
 ### Setup
