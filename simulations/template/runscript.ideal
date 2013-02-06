@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -N wrfideal
+#PBS -q debug
+#PBS -l walltime=00:03:00
+#PBS -l select=1:ncpus=1
+
+module load comp-intel/2012.0.032
+module load mpi-sgi/mpt.2.06a67
+
+
+cd $PBS_O_WORKDIR
+mpiexec ./ideal.exe >out 2>err

@@ -1,0 +1,16 @@
+#A list of experiments to run
+#Each line contains the name of the file and the five parameter values for that run
+#The namelist.input file in the template directory contains replacable strings
+#that the python code runscript.py will process to generate the experiments
+name,massair_target,sh_co2ice_albedo,sh_co2ice_emiss,nh_co2ice_albedo,nh_co2ice_emiss
+base,2.939e16, 0.461, 0.785, 0.795, 0.485
+co2_low,2.79e16, 0.461, 0.785, 0.795, 0.485
+sh_albedo_low,2.939e16, 0.431, 0.785, 0.795, 0.485
+sh_emiss_low,2.939e16, 0.461, 0.755, 0.795, 0.485
+nh_albedo_low,2.939e16, 0.461, 0.785, 0.765, 0.485
+nh_emiss_low,2.939e16, 0.461, 0.785, 0.795, 0.455
+co2_high,3.08e16, 0.461, 0.785, 0.795, 0.485
+sh_albedo_high,2.939e16, 0.491, 0.785, 0.795, 0.485
+sh_emiss_high,2.939e16, 0.461, 0.815, 0.795, 0.485
+nh_albedo_high,2.939e16, 0.461, 0.785, 0.825, 0.485
+nh_emiss_high,2.939e16, 0.461, 0.785, 0.795, 0.515

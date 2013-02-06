@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N wrf99
+#PBS -q long
+#PBS -l walltime=48:00:00
+#PBS -l select=1:ncpus=16:model=san
+
+
+module load comp-intel/2012.0.032
+module load mpi-sgi/mpt.2.06a67
+
+
+cd $PBS_O_WORKDIR
+mpiexec ./wrf.exe >out 2>err
