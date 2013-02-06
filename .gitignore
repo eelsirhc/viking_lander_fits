@@ -5,5 +5,7 @@
 \#*
 
 #created files
+*.pdf
 *.fit
-*.fit.parameter
+*.fitted
+*.fitted.parameter

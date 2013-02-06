@@ -8,7 +8,7 @@ endif
 fit = fit
 data = data
 #baseline is the base experiment about which the perturbations are taken
-baseline = $(wildcard $(data)/planetWRF.run.data)
+baseline = $(wildcard $(data)/base.data)
 #low perturbations
 low = $(wildcard $(data)/*low*.data)
 #low perturbations
@@ -31,8 +31,8 @@ fit_baseline = $(addprefix $(fit)/, $(notdir $(patsubst %.data,%.fit,$(baseline)
 lander = vl1
 
 #the final output filenam
-viking_fit_low = $(fit)/$(lander).low.fit
-viking_fit_high = $(fit)/$(lander).high.fit
+viking_fit_low = $(fit)/$(lander).low.fitted
+viking_fit_high = $(fit)/$(lander).high.fitted
 
 #the start of the data to extract from the GCM output, used to skip initial relaxation
 startrow=600
@@ -53,7 +53,7 @@ all: $(viking_fit_low) $(viking_fit_high)
 #the GCM pressure.
 $(viking_fit_low) :  $(fit_data_low) $(viking_fit) $(fit_baseline)
 	@echo "Fitting parameters using low perturbation data"
-	$(quiet)./python/fit_parameters.py --lander=$(lander) $(low_parameter_file) ${viking_fit} $@.parameter $$(suppress)
+	$(quiet)./python/fit_parameters.py --lander=$(lander) $(low_parameter_file) ${viking_fit} $@.parameter $@
 
 #as viking_fit_low, but for high perturbations
 $(viking_fit_high) : $(fit_data_high) $(viking_fit) $(fit_baseline)
