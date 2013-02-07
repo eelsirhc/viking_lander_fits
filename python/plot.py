@@ -52,7 +52,7 @@ def plot_dict(values, figsize=(6,6), filename="plot.png", dpi=300):
                 ncol=3, mode="expand", borderaxespad=0., prop={'size':6})
     leg.get_frame().set_alpha(0.4)
     pylab.xlabel("Ls") ; pylab.xlim(0,360) ; pylab.xticks([0,90,180,270,360])
-    pylab.xlabel("Pressure (Pa)") ; pylab.ylim(ylim)
+    pylab.ylabel("Pressure (Pa)") ; pylab.ylim(ylim)
     pylab.savefig(filename=filename, dpi=dpi)
 
 def read_data(fname, lander, startrow=0, stoprow=-1):
