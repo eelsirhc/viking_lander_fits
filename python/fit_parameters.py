@@ -5,6 +5,17 @@ import argparse
 from scipy import optimize, linalg
 from fit_core import *
 
+def errfunc2(p, x, y, w):
+    """Error function defined as the difference between f(x) and data"""
+    return w*(fitfunc2(p,x)-y)
+
+def fitfunc2(p, x):
+    """generates sum(p[i]*x[i])"""
+    val=0.0*x[0]
+    for n in range(len(p)):
+        val=val+p[n]*x[n]
+    return val
+
 def find_delta_x(data, basename):
     base = data[basename]
     dn = base.keys()
@@ -40,7 +51,7 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
     data, basename = load_files(parameter_file, delimiter=delimiter)
     viking_data = read_file(viking, delimiter=delimiter)
     
-    ls = numpy.arange(360)
+    ls = numpy.arange(360.)
 
     for k,v in data.items():
         d=v["data"]
@@ -74,8 +85,14 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
     a1=numpy.array([p/x for p,x in zip(dp2, dx)]).T
 
     a=dict(vl1=a1, vl2=a2)
-    X = linalg.lstsq(a[lander], #A,
-                     delta) # B)
+    p0 = numpy.zeros(5, dtype=numpy.float64)+0.1
+    def gauss(x, m, s):
+        return numpy.exp(-((x-m)/s)**2)
+    weights = 1.0 #+ gauss(ls,150,90)*4.
+    p1, success =  optimize.leastsq(errfunc2, 
+                    p0[:], 
+                    args=(a[lander].T, delta, weights))
+    X=[p1]
     vl1 = numpy.zeros(len(base["data"]["L_S"])) + base["data"]["vl1"]
     vl2 = numpy.zeros(len(base["data"]["L_S"])) + base["data"]["vl2"]
     
