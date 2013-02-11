@@ -7,8 +7,9 @@ from argh import ArghParser, arg, command
 from ordereddict import OrderedDict as odict
 import itertools
 def colors():
-    mycol = ["#e00000", "#00c000", "#2040af", "#146ebe", "#0096fa", "#00c8fa",
-                 "#00b4be", "#a0e064", "#c8e040", "#fae040", "#eb9620", "#506ed2"]
+#13cols    mycol = ["#e00000", "#00c000", "#2040af", "#146ebe", "#0096fa", "#00c8fa",
+#                 "#00b4be", "#a0e064", "#c8e040", "#fae040", "#eb9620", "#506ed2"]
+    mycol = ["black","#e00000","#00c000","#146ebe","#7a2182","#217582","#d0cd1c"]
     return itertools.cycle(mycol)
     
 def plotrange(new, old=None):
@@ -38,7 +39,7 @@ def segmented_plot(x,y,color,ylim=None,label=None):
     ylim = plotrange([y.min(),y.max()], ylim)
     return ylim
     
-def plot_dict(values, figsize=(6,6), filename="plot.png", dpi=300):
+def plot_dict(values, figsize=(6,4), filename="plot.png", dpi=150):
     """Iterates through the values dictionary, plotting each one"""
     lc = colors()
     pylab.figure(figsize=figsize)
