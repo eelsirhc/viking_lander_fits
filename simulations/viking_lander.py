@@ -72,7 +72,7 @@ if __name__=="__main__":
     for filename in args.filenames:
         print (filename)
         nc = netCDF4.Dataset(filename)
-        ls = nc.variables["L_S"]
+        ls = nc.variables["L_S"][:]
         vl1 = func_vl1_pressure_curve(nc, index)
         vl2 = func_vl2_pressure_curve(nc, index)
         for i_ls, i_vl1, i_vl2 in zip(ls, vl1, vl2):

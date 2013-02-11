@@ -56,6 +56,27 @@ def plot_dict(values, figsize=(6,4), filename="plot.png", dpi=150):
     pylab.ylabel("Pressure (Pa)") ; pylab.ylim(ylim)
     pylab.savefig(filename=filename, dpi=dpi)
 
+
+def plot_2dict(values, values2, figsize=(6,4), filename="plot.png", dpi=150):
+    """Iterates through the values dictionary, plotting each one"""
+    pylab.figure(figsize=figsize)
+    for count,valdict in enumerate([values,values2]):
+        ylim=None
+        lc = colors()
+        pylab.subplot(2,1,count+1)
+        for key, val in valdict.items():
+            ylim=segmented_plot(val["x"],val["y"],label=key,ylim=ylim,color=next(lc))
+        box = pylab.gca().get_position()
+        nlines = int(len(values.keys())/3.)
+        pylab.gca().set_position([box.x0,box.y0, box.width, box.height*(1.0-nlines*0.015)])
+        leg = pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+                ncol=3, mode="expand", borderaxespad=0., prop={'size':6})
+        leg.get_frame().set_alpha(0.4)
+        pylab.xlabel("Ls") ; pylab.xlim(0,360) ; pylab.xticks([0,90,180,270,360])
+        pylab.ylabel("Pressure (Pa)") ; pylab.ylim(ylim)
+    #
+    pylab.savefig(filename=filename, dpi=dpi)
+
 def read_data(fname, lander, startrow=0, stoprow=-1):
     parameter="p1"
     if lander=="vl2":
@@ -72,7 +93,7 @@ def read_data(fname, lander, startrow=0, stoprow=-1):
     elif fname.endswith(".fit"):
         indata = asciitable.read(fname)
         ls = numpy.arange(360)
-        data = dict(x=ls, y=fitfunc(indata[parameter],ls))
+        data = dict(x=ls, y=fitfunc(indata[parameter],ls), parameter = indata[parameter])
     else:
         raise AttributeError("Unknown Type")
     return data
@@ -96,28 +117,40 @@ def plot_data(args):
             pass
     
     if args.baseline is not None:
-        base_data = read_data(fname, args.lander, args.startrow, args.stoprow)
+        base_data = read_data(args.baseline, args.lander, args.startrow, args.stoprow)
         for key, val in values.items():
             if len(val["y"])!=len(base_data["y"]):
                 print len(val["y"]), len(base_data["y"])
                 raise ValueError("Need matching arrays to calculate perturbation")
             val["y"]=val["y"]-base_data["y"]
+            print key, numpy.mean(val["y"]), numpy.std(val["y"])
     plot_dict(values, filename=args.output)
 
-@arg("filenames", nargs="+", type=str)
+@arg("data", type=str)
+@arg("fit", type=str)
 @arg("--output", default="plot.png", type=str)
 @arg("--lander", default="vl1", type=str)
+@arg("--startrow", default=1, type=int)
+@arg("--stoprow", default=-1, type=int)
 def plot_fit(args):
-    filenames = args.filenames
-    values=odict()
-    parameter="p1"
-    if args.lander=="vl1":
-        parameter="p2"
-    for fname in filenames:
-        data = asciitable.read(fname)
-        ls = numpy.arange(360)
-        values[fname] = dict(x=ls, y=fitfunc(data[parameter],ls))
-    plot_dict(values, filename=args.output)
+
+    data = read_data(args.data, args.lander, args.startrow, args.stoprow)
+    fit =  read_data(args.fit, args.lander)
+    
+    fit["x"] = data["x"]
+    fit["y"] = fitfunc(fit["parameter"],fit["x"])
+    
+    values = odict()
+    values["data"]=data
+    values["fit"]=fit
+
+    values2 = odict()
+#    values2["data"]=data
+    values2["residual"]=dict(fit)
+    values2["residual"]["y"] = data["y"] - fit["y"]
+    print numpy.mean(values2["residual"]["y"]), numpy.std(values2["residual"]["y"])
+    
+    plot_2dict(values, values2, filename=args.output)
 
 
 if __name__=="__main__":
