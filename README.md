@@ -121,17 +121,17 @@ where the first row gives the column names that correspond to the parameters bei
 produces a files similar to this
 
     #Best fit pressure curve to vl1 data
-    #Parameter fit to best reproduce vl1 data
+    ##Parameter fit to best reproduce vl1 data
     #names,basevalue,perturbation,newvalue
-    #co2,1.0,0.0148,1.0148
-    #sh_albedo,0.461,-0.0347,0.4263
-    #sh_emiss,0.785,0.1456,0.9306
-    #nh_albedo,0.795,-0.0354,0.7596
-    #nh_emiss,0.485,-0.3009,0.1841
-	#NOTE THESE EXAMPLE VALUES ARE NOT USEFUL
+    #co2,1.0,-0.0166,0.9834
+    #sh_albedo,0.461,0.0420,0.5030
+    #sh_emiss,0.785,-0.0692,0.7158
+    #nh_albedo,0.795,-0.0230,0.7720
+    #nh_emiss,0.485,-0.0088,0.4762
+    #NOTE THESE EXAMPLE VALUES ARE NOT USEFUL
     L_S,vl1,vl2,res_vl1,res_vl2
-    0,812.505565331,901.793299665,-8.28206091811,-19.2443976334
-    1,812.742683939,902.915796375,-8.33971138839,-20.1599371335
+    0.0,802.239396083,905.483457823,1.98410832972,-22.9345557912
+    1.0,802.953044859,906.555610029,1.44992769157,-23.7997507874
     ....
 
 The output.parameter in the above example contains just the parameter table (that appears in the header above) as a readable table without the fitted pressure data.
