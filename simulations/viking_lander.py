@@ -20,7 +20,7 @@ def interp_to_site(lon, lat, data, tolat, tolon):
 
     return c
     
-def func_pressure_curve(nc, index, loc):
+def func_pressure_curve(nc, index, loc, alldata=False):
     """Given the location dictionary (lon,lat, height), calculates
     the surface pressure at the location and adjust the value from the
     model surface height to the 'true' provided height"""
@@ -46,6 +46,13 @@ def func_pressure_curve(nc, index, loc):
     dp  = -rho*grav*(loc["height"]-hgt_loc)
     
     corrected_psfc = psfc_loc+dp
+    if alldata:
+      return dict(original_psfc=psfc_loc, 
+                  corrected_psfc=corrected_psfc,
+                  hgt=hgt_loc,
+                  tsfc=tsfc_loc,
+                  dp=dp,
+                  rho=rho)  
     return corrected_psfc
 
 def func_vl1_pressure_curve(nc, index):
