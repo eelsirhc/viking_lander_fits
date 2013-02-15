@@ -15,7 +15,7 @@ def interp_to_site(lon, lat, data, tolat, tolon):
     fx = (tolon-lon[wlon])/(lon[wlon+1]-lon[wlon])
     fy = (tolat-lat[wlat])/(lat[wlat+1]-lat[wlat])
     a = p[:,0,0]*(1-fx) + p[:,0,1]*fx
-    b = p[:,1,1]*(1-fx) + p[:,1,1]*fx
+    b = p[:,1,0]*(1-fx) + p[:,1,1]*fx
     c = a*(1-fy) + b*fy
 
     return c
@@ -50,12 +50,12 @@ def func_pressure_curve(nc, index, loc):
 
 def func_vl1_pressure_curve(nc, index):
     """Calculates the surface pressure and Viking Lander 1"""
-    loc  = {"lat":22.5, "lon":-50, "height":-3627.0}
+    loc  = {"lat":22.46, "lon":-47.95, "height":-3606}
     return func_pressure_curve(nc, index, loc)
     
 def func_vl2_pressure_curve(nc, index):
     """Calculates the surface pressure and Viking Lander 2"""
-    loc = {"lat": 48.3, "lon": 134.1, "height": -4505.0}
+    loc = {"lat": 47.9, "lon": 133.75, "height": -4523.0}
     return func_pressure_curve(nc, index, loc)
     
 if __name__=="__main__":
@@ -68,11 +68,11 @@ if __name__=="__main__":
     index=slice(None,None,None) ##all data in file
     
     output=open(args.output,'w')
-    output.write("Ls,vl1,vl2\n") #header
+    output.write("L_S,vl1,vl2\n") #header
     for filename in args.filenames:
         print (filename)
         nc = netCDF4.Dataset(filename)
-        ls = nc.variables["L_S"][:]
+        ls = nc.variables["L_S"]
         vl1 = func_vl1_pressure_curve(nc, index)
         vl2 = func_vl2_pressure_curve(nc, index)
         for i_ls, i_vl1, i_vl2 in zip(ls, vl1, vl2):
