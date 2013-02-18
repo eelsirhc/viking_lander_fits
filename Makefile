@@ -41,6 +41,7 @@ stoprow=-10
 #number of harmonic modes
 #total number of modes generated is 1 + 2*nmodes
 nmodes = 5
+vmodes = 5
 
 #default make rule
 all: $(viking_fit_low) $(viking_fit_high)
@@ -63,8 +64,8 @@ $(viking_fit_high) : $(fit_data_high) $(viking_fit) $(fit_baseline)
 #To construct the Viking fit data, we need to extract data from the PDS dataset stored in the data directory
 #In this case we extract VL1 years 2 and 3, and VL2 year 2 only. This are fitted using the harmonic function.
 $(viking_fit) : $(viking_data)
-	@echo "Fitting Viking data using $(nmodes) harmonic modes"
-	$(quiet)./python/fit_viking_data.py --vl1years=2,3 --vl2years=2 --nmodes=$(nmodes) $< $@
+	@echo "Fitting Viking data using $(vmodes) harmonic modes"
+	$(quiet)./python/fit_viking_data.py --vl1years=2,3 --vl2years=2 --nmodes=$(vmodes) $< $@
 
 #Generic rule, for a required fit file, we need the equivalent data file
 #we take the data file and fit the harmonic function of nmodes to it
