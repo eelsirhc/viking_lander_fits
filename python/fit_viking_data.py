@@ -45,9 +45,10 @@ def fit_viking_data(input_file, vl1years="2,3",  vl2years="2", nmodes=5):
     fit2= fit_data(d_data2, nmodes)
     
     fit.update(fit2)
-    d_data["vl2"] = d_data2["vl2"]
-    d_data["vl2_L_S"] = d_data2["L_S"]
-    
+#    d_data["vl2"] = d_data2["vl2"]
+#    d_data["vl2_L_S"] = d_data2["L_S"]
+    asciitable.write(d_data2, "vl2.data")
+    asciitable.write(d_data, "vl1.data")
     return fit
 
 if __name__=="__main__":

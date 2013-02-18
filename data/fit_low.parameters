@@ -1,8 +1,7 @@
 filename, co2, sh_albedo, sh_emiss, nh_albedo, nh_emiss
-fit/base.fit,           1.0, 0.461, 0.785, 0.795, 0.485
-fit/co2_low.fit,        0.932, 0.461, 0.785, 0.795, 0.485
-fit/sh_albedo_low.fit,  1.0, 0.361, 0.785, 0.795, 0.485
-fit/sh_emiss_low.fit,   1.0, 0.461, 0.685, 0.795, 0.485
-fit/nh_albedo_low.fit,  1.0, 0.461, 0.785, 0.695, 0.485
-fit/nh_emiss_low.fit,   1.0, 0.461, 0.785, 0.795, 0.385
-
+fit/base.fit,          1.0, 0.542, 0.661, 0.760, 0.440
+fit/co2_low.fit,       .965, 0.542, 0.661, 0.760, 0.440
+fit/sh_albedo_low.fit, 1.0, 0.492, 0.661, 0.760, 0.440
+fit/sh_emiss_low.fit,  1.0, 0.542, 0.611, 0.760, 0.440
+fit/nh_albedo_low.fit, 1.0, 0.542, 0.661, 0.710, 0.440
+fit/nh_emiss_low.fit,  1.0, 0.542, 0.661, 0.760, 0.390
