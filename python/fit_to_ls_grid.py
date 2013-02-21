@@ -12,7 +12,6 @@ def fit_file(filename, startrow=0, stoprow=None, delimiter=None,nmodes=5):
     data =read_file(filename, 
                     startrow=startrow, stoprow=stoprow, 
                     delimiter=delimiter)
-
     #fit VL1 data
     fit= fit_data(data, nmodes)
     return fit
@@ -33,6 +32,7 @@ if __name__=="__main__":
                     stoprow=args.stoprow, 
                     delimiter=args.delimiter, 
                     nmodes=args.nmodes)
+
     output = dict(mode=range(len(fit["p1"])), 
                   p1=fit["p1"], 
                   p2=fit["p2"])

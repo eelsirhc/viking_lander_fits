@@ -79,13 +79,13 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
         dp2.append( val["data"]["delta_p_vl2".format(lander)] )
         dx.append( val["deltax"] )
         name.append(key)
-
-
+    
+    
     a2=numpy.array([p/x for p,x in zip(dp, dx)]).T
     a1=numpy.array([p/x for p,x in zip(dp2, dx)]).T
-
+    
     a=dict(vl1=a1, vl2=a2)
-    p0 = numpy.zeros(5, dtype=numpy.float64)+0.1
+    p0 = numpy.zeros(a1.shape[1], dtype=numpy.float64)+0.1
     def gauss(x, m, s):
         return numpy.exp(-((x-m)/s)**2)
     weights = 1.0 #+ gauss(ls,150,90)*4.

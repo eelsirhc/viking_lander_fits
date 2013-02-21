@@ -17,7 +17,7 @@ def load_files(filename_list, delimiter=","):
         
     return d_data, header[0]["filename"]
 
-def read_file(filename, startrow=0, stoprow=None,delimiter=None):
+def read_file(filename, startrow = 0, stoprow=None,delimiter=None):
     """Reads the data file from the filename, optionally skipping number of rows,
     using an optional delimiter """
     pathname = filename
