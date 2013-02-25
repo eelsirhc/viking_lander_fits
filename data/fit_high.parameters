@@ -1,7 +1,8 @@
-filename, co2, sh_albedo, sh_emiss, nh_albedo, nh_emiss
-fit/base.fit,          1.0, 0.542, 0.661, 0.760, 0.440
-fit/co2_high.fit,      1.035, 0.542, 0.661, 0.760, 0.440
-fit/sh_albedo_high.fit,1.0, 0.592, 0.661, 0.760, 0.440
-fit/sh_emiss_high.fit, 1.0, 0.542, 0.711, 0.760, 0.440
-fit/nh_albedo_high.fit,1.0, 0.542, 0.661, 0.810, 0.440
-fit/nh_emiss_high.fit, 1.0, 0.542, 0.661, 0.760, 0.490
+filename,massair_target,sh_co2ice_albedo,sh_co2ice_emiss,nh_co2ice_albedo,nh_co2ice_emiss, co2ice_threshold
+fit/base.fit,                   1.000,  0.500, 0.600, 0.750, 0.450, 2
+fit/co2_high.fit,               1.0357, 0.500, 0.600, 0.750, 0.450, 2
+fit/sh_albedo_high.fit,         1.000,  0.600, 0.600, 0.750, 0.450, 2
+fit/sh_emiss_high.fit,          1.000,  0.500, 0.700, 0.750, 0.450, 2
+fit/nh_albedo_high.fit,         1.000,  0.500, 0.600, 0.850, 0.450, 2
+fit/nh_emiss_high.fit,          1.000,  0.500, 0.600, 0.750, 0.550, 2
+fit/co2_ice_threshold_high.fit, 1.000,  0.500, 0.600, 0.750, 0.450, 3

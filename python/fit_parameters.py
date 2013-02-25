@@ -31,7 +31,7 @@ def find_delta_x(data, basename):
         #how many are non zero
         nonzero=0
         for pn,vn in delta.items():
-            if abs(vn) > 1e-10:
+           if abs(vn) > 1e-10:
                 nonzero+=1
                 result=vn
                 result_name=pn
