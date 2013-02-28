@@ -57,12 +57,17 @@ def func_pressure_curve(nc, index, loc, alldata=False):
 
 def func_vl1_pressure_curve(nc, index):
     """Calculates the surface pressure and Viking Lander 1"""
-    loc  = {"lat":22.46, "lon":-47.95, "height":-3606}
+    loc  = {"lat":22.2692, "lon":-48.1887, "height":-3627.}
     return func_pressure_curve(nc, index, loc)
     
 def func_vl2_pressure_curve(nc, index):
     """Calculates the surface pressure and Viking Lander 2"""
-    loc = {"lat": 47.9, "lon": 133.75, "height": -4523.0}
+    loc = {"lat": 47.6680, "lon": 134.0430, "height": -4505.0}
+    return func_pressure_curve(nc, index, loc)
+
+def func_vl2_pressure_curve(nc, index):
+    """Calculates the surface pressure and Viking Lander 2"""
+    loc = {"lat": 19.0949, "lon": -33.4908, "height": -3682.0}
     return func_pressure_curve(nc, index, loc)
     
 if __name__=="__main__":
