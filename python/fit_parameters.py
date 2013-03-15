@@ -47,12 +47,13 @@ def find_delta_x(data, basename):
     return data
 
 def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
-    
+    #load the data from the fit files
     data, basename = load_files(parameter_file, delimiter=delimiter)
+    #load the viking data
     viking_data = read_file(viking, delimiter=delimiter)
     
     ls = numpy.arange(360.)
-
+    #regenerate 4360 data points from the harmonic fits in 'data'
     for k,v in data.items():
         d=v["data"]
         #regenerate the L_S dependent data
@@ -60,6 +61,7 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
         d["vl1"] = fitfunc(d["p1"], d["L_S"])
         d["vl2"] = fitfunc(d["p2"], d["L_S"])
 
+    #generate the smoothed viking data
     viking_data["L_S"] = ls
     viking_data["vl1"] = fitfunc(viking_data["p1"], viking_data["L_S"])
     viking_data["vl2"] = fitfunc(viking_data["p2"], viking_data["L_S"])
@@ -68,38 +70,52 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
     dp = []
     dx = []
     dp2= []
+    #calculate the delta_x for each row, and the delta pressure from the base state
     find_delta_x(data, basename)
-        
+    #remove the base state, it's not needed for the fit
     base = data.pop(basename)
-    
-    delta = viking_data[lander] - base["data"][lander]
+    #calculate the difference between viking and base.
+    delta = {}
+    for l in ["vl1","vl2"]:
+        delta[l] = viking_data[l] - base["data"][l]
+    delta["both"] = numpy.hstack((delta["vl1"],delta["vl2"]))
     name=[]
+    #loop through data, extracting the state vector dX and the perturbations dP for vl1,vl2
     for key, val in data.items():
         dp.append( val["data"]["delta_p_vl1".format(lander)] )
         dp2.append( val["data"]["delta_p_vl2".format(lander)] )
         dx.append( val["deltax"] )
         name.append(key)
     
+    #create the A matrix (Ax=B) from the dP,dX
+    a1=numpy.array([p/x for p,x in zip(dp, dx)]).T
+    a2=numpy.array([p/x for p,x in zip(dp2, dx)]).T
     
-    a2=numpy.array([p/x for p,x in zip(dp, dx)]).T
-    a1=numpy.array([p/x for p,x in zip(dp2, dx)]).T
-    
-    a=dict(vl1=a1, vl2=a2)
-    p0 = numpy.zeros(a1.shape[1], dtype=numpy.float64)+0.1
+    #store the a matrices
+    a=dict(vl1=a1, vl2=a2, both=numpy.vstack((a1,a2)))
+    print a["both"].shape
+    #start with the initial guess of the perturbation as 0.1 everywhere
+    p0 = numpy.zeros(a[lander].shape[1], dtype=numpy.float64)+0.1
+    #if we want to weight things unevenly we can weight it with the gauss function
     def gauss(x, m, s):
         return numpy.exp(-((x-m)/s)**2)
+    #constant weights for now
     weights = 1.0 #+ gauss(ls,150,90)*4.
+    #call optimize with errfunc2 to calculate Ax'-P to allow leastsq to minimize it to find x.
     p1, success =  optimize.leastsq(errfunc2, 
                     p0[:], 
-                    args=(a[lander].T, delta, weights))
+                    args=(a[lander].T, delta[lander], weights))
+    #have out state vector
     X=[p1]
+    print X
+    #X is the perturbation state vector, so we calculate p + A.X to calculate our estimated p_new
     vl1 = numpy.zeros(len(base["data"]["L_S"])) + base["data"]["vl1"]
     vl2 = numpy.zeros(len(base["data"]["L_S"])) + base["data"]["vl2"]
     
     for s, p1,p2 in zip(X[0], a["vl1"].T,a["vl2"].T ): 
         vl1 = vl1 + s * p1
         vl2 = vl2 + s * p2
-        
+    #store the estimated pressure curve, and the residuals.
     base["data"]["fit_vl1"]=vl1
     base["data"]["fit_vl2"]=vl2
     base["data"]["res_vl1"]=viking_data["vl1"]-vl1
