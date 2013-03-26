@@ -3,6 +3,7 @@ import netCDF4
 import sys
 import numpy
 import argparse
+import asciitable
 
 def interp_to_site(lon, lat, data, tolat, tolon):
     """Interpolates a dataset to a single longitude and latitude point"""
@@ -65,8 +66,8 @@ def func_vl2_pressure_curve(nc, index):
     loc = {"lat": 47.6680, "lon": 134.0430, "height": -4505.0}
     return func_pressure_curve(nc, index, loc)
 
-def func_vl2_pressure_curve(nc, index):
-    """Calculates the surface pressure and Viking Lander 2"""
+def func_mpf_pressure_curve(nc, index):
+    """Calculates the surface pressure and MPF"""
     loc = {"lat": 19.0949, "lon": -33.4908, "height": -3682.0}
     return func_pressure_curve(nc, index, loc)
     
@@ -80,15 +81,18 @@ if __name__=="__main__":
     index=slice(None,None,None) ##all data in file
     
     output=open(args.output,'w')
-    output.write("L_S,vl1,vl2\n") #header
+    output.write("L_S,vl1,vl2,mpf\n") #header
     for filename in args.filenames:
         print (filename)
         nc = netCDF4.Dataset(filename)
         ls = nc.variables["L_S"][:]
         vl1 = func_vl1_pressure_curve(nc, index)
         vl2 = func_vl2_pressure_curve(nc, index)
-        for i_ls, i_vl1, i_vl2 in zip(ls, vl1, vl2):
-            output.write("{0},{1},{2}\n".format(i_ls, i_vl1, i_vl2))
+        mpf = func_mpf_pressure_curve(nc, index)
+
+        data = dict(L_S=ls, vl1=vl1, vl2=vl2, mpf=mpf)
+        for i_ls, i_vl1, i_vl2, i_mpf in zip(ls, vl1, vl2, mpf):
+            output.write("{0},{1},{2},{3}\n".format(i_ls, i_vl1, i_vl2, i_mpf))
         del nc #closes
     output.close()
     
