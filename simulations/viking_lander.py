@@ -3,7 +3,6 @@ import netCDF4
 import sys
 import numpy
 import argparse
-import asciitable
 
 def interp_to_site(lon, lat, data, tolat, tolon):
     """Interpolates a dataset to a single longitude and latitude point"""
