@@ -35,7 +35,7 @@ viking_fit_low = $(fit)/$(lander).low.fitted
 viking_fit_high = $(fit)/$(lander).high.fitted
 
 #the start of the data to extract from the GCM output, used to skip initial relaxation
-startrow=5200
+startrow=5355
 stoprow=-10
 
 #number of harmonic modes

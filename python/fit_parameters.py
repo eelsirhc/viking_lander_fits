@@ -93,21 +93,28 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
     
     #store the a matrices
     a=dict(vl1=a1, vl2=a2, both=numpy.vstack((a1,a2)))
-    print a["both"].shape
     #start with the initial guess of the perturbation as 0.1 everywhere
     p0 = numpy.zeros(a[lander].shape[1], dtype=numpy.float64)+0.1
     #if we want to weight things unevenly we can weight it with the gauss function
     def gauss(x, m, s):
-        return numpy.exp(-((x-m)/s)**2)
+        delta = numpy.abs(x-m)
+        delta[delta > 180] = 360.-delta[delta > 180]
+
+        return numpy.exp(-(delta/s)**2)
     #constant weights for now
-    weights = 1.0 #+ gauss(ls,150,90)*4.
+    if lander=="both":
+        ls=numpy.hstack((ls,ls))
+    weights = 1.0 + gauss(ls,150,20)*2.0 - gauss(ls,280,30)*0.5
     #call optimize with errfunc2 to calculate Ax'-P to allow leastsq to minimize it to find x.
     p1, success =  optimize.leastsq(errfunc2, 
                     p0[:], 
                     args=(a[lander].T, delta[lander], weights))
     #have out state vector
     X=[p1]
-    print X
+    #print "===Fits to {0}===".format(lander)
+    #for k,v in zip(data.keys(), X[0]):
+    #    print k,"=",v
+    #print "=========="
     #X is the perturbation state vector, so we calculate p + A.X to calculate our estimated p_new
     vl1 = numpy.zeros(len(base["data"]["L_S"])) + base["data"]["vl1"]
     vl2 = numpy.zeros(len(base["data"]["L_S"])) + base["data"]["vl2"]
@@ -131,11 +138,36 @@ if __name__=="__main__":
     parser.add_argument("output_filename_fit", type=str)
     parser.add_argument("--delimiter", type=str, default=',')
     parser.add_argument("--lander_name", type=str, default="vl1")
-
+    parser.add_argument("--monte_carlo", "-m", type=int, default=0)
     args = parser.parse_args()
-
-    data,base,X = fit_parameters(args.parameter_file, args.viking,lander=args.lander_name, delimiter=args.delimiter)
     
+    if args.monte_carlo == 0:
+        data,base,X = fit_parameters(args.parameter_file, args.viking,lander=args.lander_name, delimiter=args.delimiter)
+    else:
+        #monte carlo fit
+        input_data = asciitable.read(args.parameter_file)
+        lendata = len(input_data)
+        results=dict()
+        import progressbar
+        for i in progressbar.ProgressBar()(range(args.monte_carlo)):
+            pick = int(numpy.random.rand(1)*(lendata-1)+1)
+            newdata = numpy.hstack((input_data[0:1],numpy.random.choice(input_data[1:],pick)))
+            asciitable.write(newdata, open("tempfile",'w'), delimiter=args.delimiter)
+            data,base,X = fit_parameters("tempfile", 
+                            args.viking,lander=args.lander_name, delimiter=args.delimiter)
+            for k,v in zip(data.keys(), X[0]):
+                r=results.get(k,[])
+                r.append([v,numpy.std(base["data"]["res_vl1"])])
+                results[k]=r
+        for k,r in results.items():
+            data, weights = [numpy.array(q) for q in zip(*r)]
+            _x_,x_x = numpy.average(data, weights=weights),numpy.average(data**2, weights=weights)
+            m,s = _x_, numpy.sqrt(x_x-_x_**2)
+            print "{0} = {1} +- {2}".format(k,m,s)
+            numpy.savetxt("{0}.data".format(k), zip(data,weights))
+        import sys
+        sys.exit(0)
+        
     result=dict()
     result["names"] = [data[n]["deltax_name"] for n in data]
     result["basevalue"] = [base[data[n]["deltax_name"]] for n in data]

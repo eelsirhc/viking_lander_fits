@@ -22,7 +22,7 @@ def plotrange(new, old=None):
 def segmented_plot(x,y,color,ylim=None,label=None):
     diff = numpy.where(x[1:]-x[:-1] < 0)
     if len(diff[0]) == 0:
-        pylab.plot(x,y,label=label, color=color)
+        pylab.plot(x,y,label=label, color=color, alpha=0.5)
     else:
         low =list(1.0+diff[0])
         high=list(diff[0])
@@ -32,9 +32,9 @@ def segmented_plot(x,y,color,ylim=None,label=None):
         count=0
         for l,h in zip(low, high):
             if count==0:
-                pylab.plot(x[l:h],y[l:h],color=color, label=label)
+                pylab.plot(x[l:h],y[l:h],color=color, label=label, alpha=0.5)
             else:
-                pylab.plot(x[l:h],y[l:h],color=color)
+                pylab.plot(x[l:h],y[l:h],color=color, alpha=0.5)
             count=count+1
     ylim = plotrange([y.min(),y.max()], ylim)
     return ylim
@@ -83,9 +83,9 @@ def read_data(fname, lander, startrow=0, stoprow=-1):
         parameter="p2"
 
     if fname.endswith(".data") :
-        indata = asciitable.read(fname)
-        data = dict(x=indata["L_S"][startrow:stoprow],
-                        y=indata[lander][startrow:stoprow])
+        indata = read_file(fname, startrow, stoprow, delimiter=",")
+        data = dict(x=indata["L_S"],
+                        y=indata[lander])
     elif fname.endswith(".fitted"):
         indata = asciitable.read(fname)
         data = dict(x=indata["L_S"],
@@ -148,7 +148,8 @@ def plot_fit(args):
 #    values2["data"]=data
     values2["residual"]=dict(fit)
     values2["residual"]["y"] = data["y"] - fit["y"]
-    print numpy.mean(values2["residual"]["y"]), numpy.std(values2["residual"]["y"])
+    print numpy.mean(values2["residual"]["y"]), numpy.std(values2["residual"]["y"]),\
+        numpy.sqrt(numpy.mean(values2["residual"]["y"]**2))
     
     plot_2dict(values, values2, filename=args.output)
 
