@@ -14,7 +14,6 @@ def load_files(filename_list, delimiter=","):
         entry["data"] = read_file(line["filename"],delimiter=delimiter)
                                     
         d_data[line["filename"]] = entry
-        
     return d_data, header[0]["filename"]
 
 def read_file(filename, startrow = 0, stoprow=None,delimiter=None):

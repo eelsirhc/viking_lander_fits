@@ -46,7 +46,7 @@ def find_delta_x(data, basename):
         v["data"]["delta_f_vl2"] = v["data"]["p2"]  - base["data"]["p1"]
     return data
 
-def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
+def fit_parameters(parameter_file, viking, lander="vl1", delimiter=",", start_from=None):
     #load the data from the fit files
     data, basename = load_files(parameter_file, delimiter=delimiter)
     #load the viking data
@@ -75,6 +75,11 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
     #remove the base state, it's not needed for the fit
     base = data.pop(basename)
     #calculate the difference between viking and base.
+    if start_from is not None:
+        infile = read_file(start_from, delimiter=delimiter)
+        base["data"]["L_S"] = ls
+        base["data"]["vl1"] = fitfunc(infile["p1"], d["L_S"])
+        base["data"]["vl2"] = fitfunc(infile["p2"], d["L_S"])
     delta = {}
     for l in ["vl1","vl2"]:
         delta[l] = viking_data[l] - base["data"][l]
@@ -104,7 +109,7 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=","):
     #constant weights for now
     if lander=="both":
         ls=numpy.hstack((ls,ls))
-    weights = 1.0 + gauss(ls,150,20)*2.0 - gauss(ls,280,30)*0.5
+    weights = 1.0 #+ gauss(ls,150,20)*2.0 - gauss(ls,280,30)*0.5
     #call optimize with errfunc2 to calculate Ax'-P to allow leastsq to minimize it to find x.
     p1, success =  optimize.leastsq(errfunc2, 
                     p0[:], 
@@ -139,10 +144,14 @@ if __name__=="__main__":
     parser.add_argument("--delimiter", type=str, default=',')
     parser.add_argument("--lander_name", type=str, default="vl1")
     parser.add_argument("--monte_carlo", "-m", type=int, default=0)
+    parser.add_argument("--start_from", "-s", type=str, default=None)
+
     args = parser.parse_args()
     
     if args.monte_carlo == 0:
-        data,base,X = fit_parameters(args.parameter_file, args.viking,lander=args.lander_name, delimiter=args.delimiter)
+        data,base,X = fit_parameters(args.parameter_file, args.viking,lander=args.lander_name, 
+                                    delimiter=args.delimiter, start_from=args.start_from)
+        print "RMS={0}".format(numpy.sqrt(numpy.mean(base["data"]["res_vl1"]**2)))
     else:
         #monte carlo fit
         input_data = asciitable.read(args.parameter_file)
@@ -159,7 +168,8 @@ if __name__=="__main__":
                 r=results.get(k,[])
                 r.append([v,numpy.std(base["data"]["res_vl1"])])
                 results[k]=r
-        for k,r in results.items():
+        for k in sorted(results.keys()):
+            r=results[k]
             data, weights = [numpy.array(q) for q in zip(*r)]
             _x_,x_x = numpy.average(data, weights=weights),numpy.average(data**2, weights=weights)
             m,s = _x_, numpy.sqrt(x_x-_x_**2)
