@@ -4,9 +4,9 @@
 import numpy
 import asciitable
 import argparse
-from argh import ArghParser,command, arg
+from argh import ArghParser, arg
 from glob import glob
-from ordereddict import OrderedDict as odict
+from collections import OrderedDict as odict
 import os
 from fit_core import *
 

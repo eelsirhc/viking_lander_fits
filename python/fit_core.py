@@ -1,7 +1,7 @@
 from scipy import optimize, linalg
 import numpy
 import asciitable
-from ordereddict import OrderedDict as odict
+from collections import OrderedDict as odict
 
 def load_files(filename_list, delimiter=","):
     """Reads a filename+parameter list"""

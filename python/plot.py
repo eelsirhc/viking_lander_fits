@@ -3,8 +3,8 @@ import asciitable
 import numpy
 import pylab
 from fit_core import *
-from argh import ArghParser, arg, command
-from ordereddict import OrderedDict as odict
+from argh import ArghParser, arg
+from collections import OrderedDict as odict
 import itertools
 def colors():
 #13cols    mycol = ["#e00000", "#00c000", "#2040af", "#146ebe", "#0096fa", "#00c8fa",
@@ -104,27 +104,26 @@ def read_data(fname, lander, startrow=0, stoprow=-1):
 @arg("--startrow", default=1, type=int)
 @arg("--stoprow", default=-1, type=int)
 @arg("--baseline", default=None, type=str)
-def plot_data(args):
-    filenames = args.filenames
+def plot_data(filenames, output="plot.png",lander="vl1",startrow=1,stoprow=-1,baseline=None):
     values=odict()
     #for fit functions
 
     for fname in filenames:
         print fname
         try:
-            values[fname]=read_data(fname, args.lander, args.startrow, args.stoprow)
+            values[fname]=read_data(fname, lander, startrow, stoprow)
         except AttributeError as e:
             pass
     
-    if args.baseline is not None:
-        base_data = read_data(args.baseline, args.lander, args.startrow, args.stoprow)
+    if baseline is not None:
+        base_data = read_data(baseline, lander, startrow, stoprow)
         for key, val in values.items():
             if len(val["y"])!=len(base_data["y"]):
                 print len(val["y"]), len(base_data["y"])
                 raise ValueError("Need matching arrays to calculate perturbation")
             val["y"]=val["y"]-base_data["y"]
             print key, numpy.mean(val["y"]), numpy.std(val["y"])
-    plot_dict(values, filename=args.output)
+    plot_dict(values, filename=output)
 
 @arg("data", type=str)
 @arg("fit", type=str)
@@ -132,10 +131,10 @@ def plot_data(args):
 @arg("--lander", default="vl1", type=str)
 @arg("--startrow", default=1, type=int)
 @arg("--stoprow", default=-1, type=int)
-def plot_fit(args):
+def plot_fit(data, fit, output="plot.png",lander="vl1",startrow=1,stoprow=-1):
 
-    data = read_data(args.data, args.lander, args.startrow, args.stoprow)
-    fit =  read_data(args.fit, args.lander)
+    data = read_data(data, lander, startrow, stoprow)
+    fit =  read_data(fit, lander)
     
     fit["x"] = data["x"]
     fit["y"] = fitfunc(fit["parameter"],fit["x"])
@@ -150,7 +149,7 @@ def plot_fit(args):
     values2["residual"]["y"] = data["y"] - fit["y"]
     print numpy.mean(values2["residual"]["y"]), numpy.std(values2["residual"]["y"])
     
-    plot_2dict(values, values2, filename=args.output)
+    plot_2dict(values, values2, filename=output)
 
 
 if __name__=="__main__":
