@@ -1,0 +1,6 @@
+#python/plot.py plot-data fit/base.fit fit/viking.fit fit/co2_ice*.fit --output plots/co2ice.png
+python/plot.py plot-data fit/base.fit fit/viking.fit fit/*low.fit --output plots/low.png
+python/plot.py plot-data fit/base.fit fit/viking.fit fit/*high.fit --output plots/high.png
+python/plot.py plot-data fit/base.fit fit/viking.fit fit/vl1.low.fitted fit/vl2.low.fitted fit/both.low.fitted --output plots/vl2.png --lander=vl2
+python/plot.py plot-data fit/base.fit fit/viking.fit fit/vl1.low.fitted fit/vl2.low.fitted fit/both.low.fitted --output plots/vl1.png --lander=vl1
+python/plot.py plot-data fit/base.fit fit/viking.fit fit/vl1.low.fitted fit/vl1.high.fitted --output plots/vl1.only.png --lander=vl1

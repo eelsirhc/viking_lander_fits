@@ -14,7 +14,6 @@ def load_files(filename_list, delimiter=","):
         entry["data"] = read_file(line["filename"],delimiter=delimiter)
                                     
         d_data[line["filename"]] = entry
-        
     return d_data, header[0]["filename"]
 
 def read_file(filename, startrow = 0, stoprow=None,delimiter=None):
@@ -22,7 +21,6 @@ def read_file(filename, startrow = 0, stoprow=None,delimiter=None):
     using an optional delimiter """
     pathname = filename
     data = asciitable.read(pathname, delimiter=delimiter, numpy=False)
-    
     if stoprow is None:
         stoprow=None
     sl=slice(startrow, stoprow,None)
@@ -32,7 +30,7 @@ def read_file(filename, startrow = 0, stoprow=None,delimiter=None):
 
 def errfunc(p, x, y):
     """Error function defined as the difference between f(x) and data"""
-    return fitfunc(p,x)-y
+    return (fitfunc(p,x)-y)
 
 def fitfunc(p, x):
     """Model function, defined as y = mean + sum( amp[i]*cos( 2*pi*mode*(t-phase[i])/360. ) )"""

@@ -1,8 +1,0 @@
-filename,massair_target,sh_co2ice_albedo,sh_co2ice_emiss,nh_co2ice_albedo,nh_co2ice_emiss, co2ice_threshold
-fit/base.fit,                   1.000,  0.500, 0.600, 0.750, 0.450, 2
-fit/co2_low.fit,                0.964,  0.500, 0.600, 0.750, 0.450, 2
-fit/sh_albedo_low.fit,          1.000,  0.400, 0.600, 0.750, 0.450, 2
-fit/sh_emiss_low.fit,           1.000,  0.500, 0.500, 0.750, 0.450, 2
-fit/nh_albedo_low.fit,          1.000,  0.500, 0.600, 0.650, 0.450, 2
-fit/nh_emiss_low.fit,           1.000,  0.500, 0.600, 0.750, 0.350, 2
-fit/co2_ice_threshold_low.fit,  1.000,  0.500, 0.600, 0.750, 0.450, 1

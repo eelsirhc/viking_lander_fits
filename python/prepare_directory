@@ -1,0 +1,7 @@
+mkdir data 
+mv * data
+mkdir fit plots
+cp ../vldata/vl_p.dat data
+cd data
+../../../python/convert_run_values_to_fits.py
+cd ../
