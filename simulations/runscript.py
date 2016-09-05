@@ -18,4 +18,4 @@ for row in data:
     output.write(namelist)
     output.close()
     print("(cd {0} ; ./ideal.single) &".format(row["name"]))
-    print("(cd {0} ; sleep 240 ; qsub runscript.wrf) &".format(row["name"]))
+    print("(cd {0} ; sleep 10 ; qsub runscript.wrf) &".format(row["name"]))
