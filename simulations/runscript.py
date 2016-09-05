@@ -17,5 +17,5 @@ for row in data:
     output = open(namelist_file,'w')
     output.write(namelist)
     output.close()
-    print("(cd {0} ; qsub runscript.ideal) &".format(row["name"]))
+    print("(cd {0} ; ./ideal.single) &".format(row["name"]))
     print("(cd {0} ; sleep 240 ; qsub runscript.wrf) &".format(row["name"]))
