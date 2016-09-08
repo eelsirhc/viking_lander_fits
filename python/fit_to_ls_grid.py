@@ -13,6 +13,7 @@ def fit_file(filename, startrow=0, stoprow=None, delimiter=None,nmodes=5):
                     startrow=startrow, stoprow=stoprow, 
                     delimiter=delimiter)
     #fit VL1 data
+    print data
     fit= fit_data(data, nmodes)
     return fit
 
