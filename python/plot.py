@@ -157,7 +157,7 @@ def plot_data(filenames, output="plot.png",lander="vl1",startrow=1,stoprow=-1,ba
 @arg("--startrow", default=1, type=int)
 @arg("--stoprow", default=-1, type=int)
 @arg("--baseline", default=None, type=str)
-def plot_xin(args):
+def plot_xin(viking,data,fit,output="plot.png",startrow=1,stoprow=-1,baseline=None):
     values=odict()
     #for fit functions
     
@@ -248,8 +248,9 @@ def plot_fit(data, fit, output="plot.png",lander="vl1",startrow=1,stoprow=-1):
 @arg("filename", type=str)
 @arg("output", type=str)
 @arg("--dpi", default=150, type=int)
-@arg("--figsize", default=(6,4), type=lambda x: [int(y) for y in x.split(",")])
-def plot_fitted(args):
+@arg("--figsize", default=None, type=lambda x: [int(y) for y in x.split(",")])
+def plot_fitted(filename,output, dpi=150,figsize=None):
+    figsize=figsize or (6,4)
     data = asciitable.read(args.filename)
     pylab.figure(figsize=args.figsize)
     pylab.subplots_adjust(hspace=0.25)
@@ -276,7 +277,7 @@ def plot_fitted(args):
 @arg("--lander", default="vl1", type=str)
 @arg("--startrow", default=1, type=int)
 @arg("--stoprow", default=-1, type=int)
-def rms_data(args):
+def rms_data(filenames,output="rms.dat",lander="vl1",startrow=1,stoprow=-1):
     filenames = args.filenames
     values=odict()
     #for fit functions
