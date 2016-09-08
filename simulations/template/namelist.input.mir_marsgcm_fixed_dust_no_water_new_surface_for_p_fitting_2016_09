@@ -1,0 +1,148 @@
+ &time_control
+ run_days                            = 4000,
+ run_hours                           = 0,
+ run_minutes                         = 0,
+ run_seconds                         = 0,
+ start_year                          = 2,
+ start_month                         = 0,
+ start_day                           = 1,
+ start_hour                          = 00,
+ start_minute                        = 00,
+ start_second                        = 00,
+ end_year                            = 10,
+ end_day                             = 385,
+ end_hour                            = 00,
+ end_minute                          = 00,
+ end_second                          = 00,
+ input_from_file                     = .true., 
+ fine_input_stream                   = 0,
+ history_interval                    = 360,
+ frames_per_outfile                  = 100,
+ restart                             = .false.,
+ restart_interval                    = 144000,
+ io_form_history                     = 2
+ io_form_restart                     = 2
+ io_form_input                       = 2
+ io_form_auxinput2                   = 2
+ io_form_boundary                    = 2
+ debug_level                         = 0
+ override_restart_timers             = .true.
+ iofields_filename                   = "pressure_cycle_fitting_outfile_defn.txt"
+/
+
+ &domains
+ time_step                           = 180,
+ time_step_fract_num                 = 0,
+ time_step_fract_den                 = 1,
+ max_dom                             = 1,
+ s_we                                = 1,
+ e_we                                = 73,
+ s_sn                                = 1, 
+ e_sn                                = 37,
+ s_vert                              = 1, 
+ e_vert                              = 53,
+ dx                                  = 332805,
+ dy                                  = 295826,
+ ztop                                = 120000,
+ grid_id                             = 1,
+ parent_id                           = 0,
+ i_parent_start                      = 0,
+ j_parent_start                      = 0,
+ parent_grid_ratio                   = 1,
+ parent_time_step_ratio              = 1,
+ feedback                            = 1,
+ smooth_option                       = 0
+ we_fix                              = 0
+ sn_fix                              = 0
+ lat_ref                             = 0.,
+ lon_ref                             = 0.,
+ lat_span                            = 180.,
+ lon_span                            = 360.,
+ p_scale                             = 1.
+ p_fit_nest                          = 1.11434
+ vertical_grid                       = 47
+ massair_target                      = {massair_target}
+ /
+
+ &physics
+ prescribed_ice = .false.,
+ mp_physics                          = 41,
+ ra_lw_physics                       = 45,
+ ra_sw_physics                       = 45,
+ ra_du_physics                       = 43,
+ radt                                = 30,
+ sf_sfclay_physics                   = 1,
+ sf_surface_physics                  = 41,
+ bl_pbl_physics                      = 99,
+ bldt                                = 0,
+ cu_physics                          = 0,
+ cudt                                = 0,
+ isfflx                              = 1,
+ ifsnow                              = 0,
+ icloud                              = 1,
+ num_soil_layers                     = 15,
+ optical_depth                       = 1.0,
+ ra_mars_kdm_simpledust              = .true.,
+ ra_mars_kdm_double_gauss            = .true.,
+ slope_rad                           = 0,
+ topo_shading                        = 0,
+ mars_co2_cycle                      = .true.,
+ ice_ti_feedback                     = .false.,
+ do_regolith                         = .false.,
+ topo_map                            = 3,
+ ti2007                              = 3,
+ alb_my                              = 4,
+ roughness_map                       = 1,
+ sh_co2ice_albedo                    = {sh_co2ice_albedo}
+ sh_co2ice_emiss                     = {sh_co2ice_emiss}
+ nh_co2ice_albedo                    = {nh_co2ice_albedo}
+ nh_co2ice_emiss                     = {nh_co2ice_emiss}
+ /
+
+ &dynamics
+ diff_opt                            = 1,
+ km_opt                              = 4,
+ damp_opt                            = 0,
+ zdamp                               = 4000.,
+ dampcoef                            = 0.01,
+ khdif                               = 0,
+ kvdif                               = 0,
+ smdiv                               = 0.1,
+ emdiv                               = 0.01,
+ epssm                               = 0.1,
+ non_hydrostatic                     = .false.,
+ time_step_sound                     = 4,
+ h_mom_adv_order                     = 5,
+ v_mom_adv_order                     = 3,
+ h_sca_adv_order                     = 5,
+ v_sca_adv_order                     = 3,
+ polar_filter                        = .true.,
+ rotated_pole                        = .false.,
+ base_pres                           = 610.,
+ base_temp                           = 230.,
+ base_lapse                          = 9.788,
+ use_baseparam_fr_nml                = .t.,
+/
+
+ &bdy_control
+ spec_bdy_width                      = 5,
+ spec_zone                           = 1,
+ relax_zone                          = 4,
+ periodic_x                          = .true. ,
+ symmetric_xs                        = .false.,
+ symmetric_xe                        = .false.,
+ open_xs                             = .false.,
+ open_xe                             = .false.,
+ periodic_y                          = .false.,
+ symmetric_ys                        = .false.,
+ symmetric_ye                        = .false.,
+ open_ys                             = .false.,
+ open_ye                             = .false.,
+ nested                              = .false.,
+ polar                               = .true. ,
+ /
+
+ &namelist_quilt
+ nio_tasks_per_group = 0,
+ nio_groups = 1,
+ /
