@@ -93,6 +93,7 @@
  ti2007                              = 3,
  alb_my                              = 4,
  roughness_map                       = 1,
+ custom_ice_parameters               = .true.,
  sh_co2ice_albedo                    = {sh_co2ice_albedo}
  sh_co2ice_emiss                     = {sh_co2ice_emiss}
  nh_co2ice_albedo                    = {nh_co2ice_albedo}

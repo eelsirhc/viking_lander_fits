@@ -85,6 +85,7 @@
  mars_co2_cycle                      = .true.,
  ice_ti_feedback                     = .false.,
  do_regolith                         = .false.,
+ custom_ice_parameters               = .true.,
  sh_co2ice_albedo                    = {sh_co2ice_albedo}
  sh_co2ice_emiss                     = {sh_co2ice_emiss}
  nh_co2ice_albedo                    = {nh_co2ice_albedo}
