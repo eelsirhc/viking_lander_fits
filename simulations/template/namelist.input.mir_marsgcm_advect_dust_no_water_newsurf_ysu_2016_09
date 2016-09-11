@@ -3,32 +3,29 @@
  run_hours                           = 0,
  run_minutes                         = 0,
  run_seconds                         = 0,
- start_year                          = 1,
- start_month                         = 0,
- start_day                           = 1,
+ start_year                          = 0001,
+ start_day                           = 01,
  start_hour                          = 00,
  start_minute                        = 00,
  start_second                        = 00,
- end_year                            = 10,
- end_day                             = 385,
+ end_year                            = 041,
+ end_day                             = 21,
  end_hour                            = 00,
  end_minute                          = 00,
  end_second                          = 00,
- input_from_file                     = .true., 
- fine_input_stream                   = 0,
  history_interval                    = 360,
  frames_per_outfile                  = 400,
  restart                             = .false.,
- restart_interval                    = 144000,
+ restart_interval                    = 14400,
+ write_hist_at_0h_rst                = .true.,
  io_form_history                     = 2
  io_form_restart                     = 2
  io_form_input                       = 2
- io_form_auxinput2                   = 2
  io_form_boundary                    = 2
  debug_level                         = 0
  override_restart_timers             = .true.
- iofields_filename                   = "pressure_cycle_fitting_outfile_defn.txt"
- /
+ iofields_filename                   = "pressure_cycle_fitting_dust_outfile_defn.txt"
+/
 
  &domains
  time_step                           = 180,
@@ -66,14 +63,14 @@
 
  &physics
  prescribed_ice = .false.,
- mp_physics                          = 41,
+ mp_physics                          = 47,
  ra_lw_physics                       = 45,
  ra_sw_physics                       = 45,
- ra_du_physics                       = 43,
+ ra_du_physics                       = 46,
  radt                                = 30,
  sf_sfclay_physics                   = 1,
  sf_surface_physics                  = 41,
- bl_pbl_physics                      = 99,
+ bl_pbl_physics                      = 1,
  bldt                                = 0,
  cu_physics                          = 0,
  cudt                                = 0,
@@ -81,19 +78,20 @@
  ifsnow                              = 0,
  icloud                              = 1,
  num_soil_layers                     = 15,
- optical_depth                       = 1.0,
- ra_mars_kdm_simpledust              = .true.,
- ra_mars_kdm_double_gauss            = .true.,
- slope_rad                           = 0,
- topo_shading                        = 0,
  mars_co2_cycle                      = .true.,
  ice_ti_feedback                     = .false.,
  do_regolith                         = .false.,
+ topo_map                            = 3,
+ ti2007                              = 3,
+ alb_my                              = 4,
+ roughness_map                       = 1,
+ planet_xkzmin                       = 0.01,
+ planet_xkzmax                       = 1000.,
  custom_ice_parameters               = .true.,
  sh_co2ice_albedo                    = {sh_co2ice_albedo}
  sh_co2ice_emiss                     = {sh_co2ice_emiss}
  nh_co2ice_albedo                    = {nh_co2ice_albedo}
- nh_co2ice_emiss                     = {nh_co2ice_emiss}
+ nh_co2ice_emiss                     = {nh_co2ice_emiss} 
  /
 
  &dynamics
@@ -115,16 +113,30 @@
  v_sca_adv_order                     = 3,
  polar_filter                        = .true.,
  rotated_pole                        = .false.,
- base_pres                           = 610.,
- base_temp                           = 230.,
- base_lapse                          = 9.788,
- use_baseparam_fr_nml                = .t.,
+ mars_ang_mom                        = .false.,
+ start_my                            = 7.,
+ coupling_coefficient                = 5.e-7, 
+ /
+
+ &dust
+ rhod                                = 2500., 2500., 2500.,
+ ddpp                                = 4.e-6, 2.e-6, 2.e-6,
+ ddpp2                               = 0., 2.e-6, 2.e-6,
+ ipcp                                = 0.036, 5.e-7, 5.e-7,
+ sspp                                = 1., 9.e-5, 9.e-5,
+ mumars                              = 1.e-5, 1.e-5, 1.e-5,
+ nswalpha1                           = 3.5e-5, 1.e-7, 1.e-7,
+ nswalpha2                           = 0., 1.e-7, 1.e-7,
+ dalpha1                             = 9.e-9, 1.e-8, 1.e-8,
+ dalpha2                             = 0., 1.e-8, 1.e-8,
+ nsws                                = .true.,.true., .true.,
+ ddev                                = .true.,.true., .true.,
+ initsurfdust1                       = 100., 1.e5, 1.e5,
+ initsurfdust2                       = 0., 0., 0.,
+ reset_surfdust1                     = .true., .true., .true.,
 /
 
  &bdy_control
- spec_bdy_width                      = 5,
- spec_zone                           = 1,
- relax_zone                          = 4,
  periodic_x                          = .true. ,
  symmetric_xs                        = .false.,
  symmetric_xe                        = .false.,
