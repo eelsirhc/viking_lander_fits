@@ -56,23 +56,33 @@ def func_pressure_curve(nc, index, loc, alldata=False):
     return corrected_psfc
 
 def func_vl1_pressure_curve(nc, index):
-    """Calculates the surface pressure and Viking Lander 1"""
+    """Calculates the surface pressure at Viking Lander 1"""
     loc  = {"lat":22.2692, "lon":-48.1887, "height":-3627.}
     return func_pressure_curve(nc, index, loc)
     
 def func_vl2_pressure_curve(nc, index):
-    """Calculates the surface pressure and Viking Lander 2"""
+    """Calculates the surface pressure at Viking Lander 2"""
     loc = {"lat": 47.6680, "lon": 134.0430, "height": -4505.0}
     return func_pressure_curve(nc, index, loc)
 
 def func_mpf_pressure_curve(nc, index):
-    """Calculates the surface pressure and MPF"""
+    """Calculates the surface pressure at MPF"""
     loc = {"lat": 19.0949, "lon": -33.4908, "height": -3682.0}
+    return func_pressure_curve(nc, index, loc)
+
+def func_pho_pressure_curve(nc, index):
+    """Calculates the surface pressure at PHX"""
+    loc = {"lat": 68.22, "lon": -125.75, "height": -4130.}
+    return func_pressure_curve(nc, index, loc)
+    
+def func_msl_pressure_curve(nc, index):
+    """Calculates the surface pressure at MSL"""
+    loc = {"lat": -4.50846, "lon": 137.4416, "height": -4500.97}
     return func_pressure_curve(nc, index, loc)
     
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", default="viking_lander_pressure.data")
+    parser.add_argument("--output", default="mars_lander_pressure.data")
     parser.add_argument("filenames", nargs="+")
     args = parser.parse_args()
 
@@ -80,7 +90,7 @@ if __name__=="__main__":
     index=slice(None,None,None) ##all data in file
     
     output=open(args.output,'w')
-    output.write("L_S,vl1,vl2,mpf\n") #header
+    output.write("L_S,vl1,vl2,mpf,phx,msl\n") #header
     for filename in args.filenames:
         print (filename)
         nc = netCDF4.Dataset(filename)
@@ -88,10 +98,12 @@ if __name__=="__main__":
         vl1 = func_vl1_pressure_curve(nc, index)
         vl2 = func_vl2_pressure_curve(nc, index)
         mpf = func_mpf_pressure_curve(nc, index)
+        pho = func_pho_pressure_curve(nc, index)
+        msl = func_msl_pressure_curve(nc, index)
 
-        data = dict(L_S=ls, vl1=vl1, vl2=vl2, mpf=mpf)
-        for i_ls, i_vl1, i_vl2, i_mpf in zip(ls, vl1, vl2, mpf):
-            output.write("{0},{1},{2},{3}\n".format(i_ls, i_vl1, i_vl2, i_mpf))
+        data = dict(L_S=ls, vl1=vl1, vl2=vl2, mpf=mpf, pho=pho, msl=msl)
+        for i_ls, i_vl1, i_vl2, i_mpf, i_pho, i_msl in zip(ls, vl1, vl2, mpf, pho, msl):
+            output.write("{0},{1},{2},{3},{4},{5}\n".format(i_ls, i_vl1, i_vl2, i_mpf, i_pho, i_msl))
         del nc #closes
     output.close()
     
