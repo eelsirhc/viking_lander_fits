@@ -3,6 +3,7 @@ import netCDF4
 import sys
 import numpy
 import argparse
+from scipy.interpolate import griddata
 
 # stuff for getting L_S from Times
 zero_date=488.7045
@@ -85,15 +86,25 @@ def interp_to_site(lon, lat, data, tolat, tolon):
 
     return c
     
-def func_pressure_curve(nc, nc_i, index, loc, alldata=False):
+def func_pressure_curve(nc, nc_i, index, loc, ns, alldata=False):
     """Given the location dictionary (lon,lat, height), calculates
     the surface pressure at the location and adjust the value from the
     model surface height to the 'true' provided height"""
     
-    lon = numpy.squeeze(nc_i.variables["XLONG"][0,0,:])
-    lat = numpy.squeeze(nc_i.variables["XLAT"][0,:,0])
     psfc = nc.variables["PSFC"][index]
-    psfc_loc = interp_to_site(lon, lat, psfc, loc["lat"],loc["lon"])
+
+    if ns:
+      lon = numpy.concatenate(nc_i.variables["XLONG"][0,:,:]).flatten()
+      lat = numpy.concatenate(nc_i.variables["XLAT"][0,:,:]).flatten()
+      psfc_loc = psfc[:,0,0]
+      times_to_do = numpy.size(psfc,0)
+      for t in range(0,times_to_do):
+        p_infield = numpy.concatenate(psfc[t,:,:]).flatten()
+        psfc_loc[t] = griddata((lon,lat), p_infield, (loc["lon"], loc["lat"]), method='linear')
+    else:
+      lon = numpy.squeeze(nc_i.variables["XLONG"][0,0,:])
+      lat = numpy.squeeze(nc_i.variables["XLAT"][0,:,0])
+      psfc_loc = interp_to_site(lon, lat, psfc, loc["lat"],loc["lon"])
     
     if "height" not in loc:
         return psfc_loc
@@ -101,11 +112,25 @@ def func_pressure_curve(nc, nc_i, index, loc, alldata=False):
     rd    = nc.getncattr("R_D")
     cp    = nc.getncattr("CP")
     grav  = nc.getncattr("G")
+
     tsfc = nc.variables["TSK"][index]
     hgt = nc_i.variables["HGT"][index]
-    
-    tsfc_loc = interp_to_site(lon, lat, tsfc, loc["lat"],loc["lon"])
-    hgt_loc  = interp_to_site(lon, lat, hgt,  loc["lat"],loc["lon"])
+
+    if ns:
+      tsfc_loc = tsfc[:,0,0]
+      hgt_loc  = numpy.zeros_like(tsfc_loc)
+
+      h_infield = numpy.concatenate(hgt[0,:,:]).flatten()
+      hgt_loc[0] = griddata((lon,lat), h_infield, (loc["lon"], loc["lat"]), method='linear')
+      hgt_loc[1:times_to_do] = hgt_loc[0]
+
+      for t in range(0,times_to_do):
+        t_infield = numpy.concatenate(tsfc[t,:,:]).flatten()
+        tsfc_loc[t] = griddata((lon,lat), t_infield, (loc["lon"], loc["lat"]), method='linear')
+
+    else:
+      tsfc_loc = interp_to_site(lon, lat, tsfc, loc["lat"],loc["lon"])
+      hgt_loc  = interp_to_site(lon, lat, hgt,  loc["lat"],loc["lon"])
 
     rho = psfc_loc/(rd*tsfc_loc)
     dp  = -rho*grav*(loc["height"]-hgt_loc)
@@ -120,30 +145,30 @@ def func_pressure_curve(nc, nc_i, index, loc, alldata=False):
                   rho=rho)  
     return corrected_psfc
 
-def func_vl1_pressure_curve(nc, nc_i, index):
+def func_vl1_pressure_curve(nc, nc_i, index, ns):
     """Calculates the surface pressure at Viking Lander 1"""
     loc  = {"lat":22.2692, "lon":-48.1887, "height":-3627.}
-    return func_pressure_curve(nc, nc_i, index, loc)
+    return func_pressure_curve(nc, nc_i, index, loc, ns)
     
-def func_vl2_pressure_curve(nc, nc_i, index):
+def func_vl2_pressure_curve(nc, nc_i, index, ns):
     """Calculates the surface pressure at Viking Lander 2"""
     loc = {"lat": 47.6680, "lon": 134.0430, "height": -4505.0}
-    return func_pressure_curve(nc, nc_i, index, loc)
+    return func_pressure_curve(nc, nc_i, index, loc, ns)
 
-def func_mpf_pressure_curve(nc, nc_i, index):
+def func_mpf_pressure_curve(nc, nc_i, index, ns):
     """Calculates the surface pressure at MPF"""
     loc = {"lat": 19.0949, "lon": -33.4908, "height": -3682.0}
-    return func_pressure_curve(nc, nc_i, index, loc)
+    return func_pressure_curve(nc, nc_i, index, loc, ns)
 
-def func_pho_pressure_curve(nc, nc_i, index):
+def func_pho_pressure_curve(nc, nc_i, index, ns):
     """Calculates the surface pressure at PHX"""
     loc = {"lat": 68.22, "lon": -125.75, "height": -4130.}
-    return func_pressure_curve(nc, nc_i, index, loc)
+    return func_pressure_curve(nc, nc_i, index, loc, ns)
     
-def func_msl_pressure_curve(nc, nc_i, index):
+def func_msl_pressure_curve(nc, nc_i, index, ns):
     """Calculates the surface pressure at MSL"""
     loc = {"lat": -4.50846, "lon": 137.4416, "height": -4500.97}
-    return func_pressure_curve(nc, nc_i, index, loc)
+    return func_pressure_curve(nc, nc_i, index, loc, ns)
     
 def func_get_ls_from_times(nc):
     """Return Ls given the netcdf file handle that contains the Times variable"""
@@ -168,8 +193,11 @@ if __name__=="__main__":
     parser.add_argument("--use_wrfinput", action="store_true")
     parser.add_argument("--get_ls_from_Times", action="store_true")
     parser.add_argument("--average_over")
+    parser.add_argument("--not_simple_lat_lon", action="store_true")
     parser.add_argument("filenames", nargs="+")
     args = parser.parse_args()
+
+    print args.not_simple_lat_lon
 
     if args.use_wrfinput:
            print "... using wrfinput to get XLAT,XLONG,HGT"
@@ -194,11 +222,11 @@ if __name__=="__main__":
 #           print "[DEBUG] first ls in file: ",ls[0]
         else:
            ls = nc.variables["L_S"][:]
-        vl1 = func_vl1_pressure_curve(nc, nc_i, index)
-        vl2 = func_vl2_pressure_curve(nc, nc_i, index)
-        mpf = func_mpf_pressure_curve(nc, nc_i, index)
-        pho = func_pho_pressure_curve(nc, nc_i, index)
-        msl = func_msl_pressure_curve(nc, nc_i, index)
+        vl1 = func_vl1_pressure_curve(nc, nc_i, index, args.not_simple_lat_lon)
+        vl2 = func_vl2_pressure_curve(nc, nc_i, index, args.not_simple_lat_lon)
+        mpf = func_mpf_pressure_curve(nc, nc_i, index, args.not_simple_lat_lon)
+        pho = func_pho_pressure_curve(nc, nc_i, index, args.not_simple_lat_lon)
+        msl = func_msl_pressure_curve(nc, nc_i, index, args.not_simple_lat_lon)
 
         if args.average_over is not None:
            new_ls  = numpy.mean(ls.reshape(-1,int(args.average_over)), axis=1)
