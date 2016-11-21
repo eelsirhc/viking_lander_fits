@@ -51,7 +51,7 @@ def plot_dict(values, figsize=(6,4), filename="plot.png", dpi=150):
     ylim=None
     for key, val in values.items():
 
-        ylim=segmented_plot(val["x"],val["y"],label=key,ylim=ylim,color=next(lc))
+        ylim=segmented_plot(val["x"]%360,val["y"],label=key,ylim=ylim,color=next(lc))
     box = pylab.gca().get_position()
     nlines = int(len(values.keys())/3.)
     pylab.gca().set_position([box.x0,box.y0, box.width, box.height*(1.0-nlines*0.015)])
