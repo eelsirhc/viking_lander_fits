@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #Christopher Lee, Ashima Research, 2013
+from __future__ import print_function
 import numpy
 import argparse
 from scipy import optimize, linalg
@@ -34,7 +35,7 @@ def f(args):
             x[elem]=xo
         else:
             ro=rn
-    print index
+    print(index)
     return x,ro
     
 def rms(x):
@@ -71,7 +72,7 @@ def find_delta_x(data, basename):
                 result=vn
                 result_name=pn
         if nonzero>1:
-            print "Error, found too many non-zeroes perturbations"
+            print("Error, found too many non-zeroes perturbations")
         v["deltax"]=result
         v["deltax_name"]=result_name
         #now delta p
@@ -217,8 +218,8 @@ def fit_parameters(parameter_file, viking, lander="vl1", delimiter=",", start_fr
     m=numpy.vstack(m)
     q=numpy.vstack([m.T,numpy.array(rr)])
     numpy.savetxt("mdata",q.T,delimiter=',',fmt="%8.5f")
-    print numpy.mean(m,axis=0)
-    print numpy.std(m,axis=0)
+    print(numpy.mean(m,axis=0))
+    print(numpy.std(m,axis=0))
     return data, base, X
     
 if __name__=="__main__":
@@ -237,7 +238,7 @@ if __name__=="__main__":
     if args.monte_carlo == 0:
         data,base,X = fit_parameters(args.parameter_file, args.viking,lander=args.lander_name, 
                                     delimiter=args.delimiter, start_from=args.start_from)
-        print "RMS={0}".format(numpy.sqrt(numpy.mean(base["data"]["res_vl1"]**2)))
+        print("RMS={0}".format(numpy.sqrt(numpy.mean(base["data"]["res_vl1"]**2))))
     else:
         #monte carlo fit
         input_data = asciitable.read(args.parameter_file)
@@ -259,7 +260,7 @@ if __name__=="__main__":
             data, weights = [numpy.array(q) for q in zip(*r)]
             _x_,x_x = numpy.average(data, weights=weights),numpy.average(data**2, weights=weights)
             m,s = _x_, numpy.sqrt(x_x-_x_**2)
-            print "{0} = {1} +- {2}".format(k,m,s)
+            print("{0} = {1} +- {2}".format(k,m,s))
             numpy.savetxt("{0}.data".format(k), zip(data,weights))
         import sys
         sys.exit(0)

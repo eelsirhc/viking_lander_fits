@@ -1,3 +1,4 @@
+from __future__ import print_function
 from scipy import optimize, linalg
 import numpy
 import asciitable
@@ -21,7 +22,7 @@ def read_file(filename, startrow = 0, stoprow=None,delimiter=None):
     using an optional delimiter """
     pathname = filename
     data = asciitable.read(pathname, delimiter=delimiter, numpy=False)
-    print filename, stoprow, startrow
+    print(filename, stoprow, startrow)
     if stoprow is None:
         stoprow=None
     sl=slice(startrow, stoprow,None)
@@ -51,7 +52,7 @@ def fit_data(data, nmodes):
     L_S = numpy.arange(360)
     fit_results=dict(L_S=L_S)
     if "vl1" in data:
-        print data["L_S"].shape, data["vl1"].shape
+        print(data["L_S"].shape, data["vl1"].shape)
         p1, success =  optimize.leastsq(errfunc, 
                         p0[:], 
                         args=(data["L_S"][1:-1].astype(numpy.float64), 

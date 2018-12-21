@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import asciitable
 
 data = asciitable.read("run_values", numpy=False)
@@ -6,7 +7,7 @@ data2 = asciitable.read("run_values")
 low = []
 high = []
 names = list(data2.dtype.names)
-print names
+print(names)
 names[0] = "filename"
 ibase = data["name"].index("base")
 for r in data:

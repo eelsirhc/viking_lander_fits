@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #Christopher Lee, Ashima Research, 2013
 #http://starbase.jpl.nasa.gov/vl1-m-met-4-binned-p-t-v-corr-v1.0/vl_1001/data/
+from __future__ import print_function
 import numpy
 import asciitable
 import argparse

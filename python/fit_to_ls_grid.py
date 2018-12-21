@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #Christopher Lee, Ashima Research, 2013
+from __future__ import print_function
 import numpy
 import asciitable
 import argparse
@@ -13,7 +14,7 @@ def fit_file(filename, startrow=0, stoprow=None, delimiter=None,nmodes=5):
                     startrow=startrow, stoprow=stoprow, 
                     delimiter=delimiter)
     #fit VL1 data
-    print data
+    print(data)
     fit= fit_data(data, nmodes)
     return fit
 

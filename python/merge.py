@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import asciitable
 import sys
 
@@ -14,4 +15,4 @@ for v in fitl["names"]:
     b=1.0
     if v=="massair_target":
         b=run_values[v][base]
-    print v, b*0.5*(fitl["newvalue"][vi]+fith["newvalue"][vi])
+    print(v, b*0.5*(fitl["newvalue"][vi]+fith["newvalue"][vi]))

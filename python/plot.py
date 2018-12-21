@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import asciitable
 import numpy
 import pylab
@@ -133,7 +134,7 @@ def plot_data(filenames, output="plot.png",lander="vl1",startrow=1,stoprow=-1,ba
     #for fit functions
 
     for fname in filenames:
-        print fname
+        print(fname)
         try:
             values[fname]=read_data(fname, lander, startrow, stoprow)
         except AttributeError as e:
@@ -143,10 +144,10 @@ def plot_data(filenames, output="plot.png",lander="vl1",startrow=1,stoprow=-1,ba
         base_data = read_data(baseline, lander, startrow, stoprow)
         for key, val in values.items():
             if len(val["y"])!=len(base_data["y"]):
-                print len(val["y"]), len(base_data["y"])
+                print(len(val["y"]), len(base_data["y"]))
                 raise ValueError("Need matching arrays to calculate perturbation")
             val["y"]=val["y"]-base_data["y"]
-            print key, numpy.mean(val["y"]), numpy.std(val["y"])
+            print(key, numpy.mean(val["y"]), numpy.std(val["y"]))
     plot_dict(values, filename=output)
 
 
@@ -240,8 +241,8 @@ def plot_fit(data, fit, output="plot.png",lander="vl1",startrow=1,stoprow=-1):
 #    values2["data"]=data
     values2["residual"]=dict(fit)
     values2["residual"]["y"] = data["y"] - fit["y"]
-    print numpy.mean(values2["residual"]["y"]), numpy.std(values2["residual"]["y"]),\
-        numpy.sqrt(numpy.mean(values2["residual"]["y"]**2))
+    print(numpy.mean(values2["residual"]["y"]), numpy.std(values2["residual"]["y"]),\
+        numpy.sqrt(numpy.mean(values2["residual"]["y"]**2)))
     
     plot_2dict(values, values2, filename=output)
 
@@ -283,7 +284,7 @@ def rms_data(filenames,output="rms.dat",lander="vl1",startrow=1,stoprow=-1):
     #for fit functions
 
     for fname in filenames:
-        print fname
+        print(fname)
         try:
             values[fname]=read_data(fname, args.lander, args.startrow, args.stoprow)
         except AttributeError as e:
