@@ -11,7 +11,7 @@ from collections import OrderedDict as odict
 import os
 from fit_core import *
 
-def fit_viking_data(input_file, vl1years="2,3",  vl2years="2", nmodes=5):
+def fit_viking_data(input_file, vl1years="2,3",  vl2years="2", nmodes=5, rems_too=False):
     """Translate viking data from
          name year ls  d h m s p(mb)
          VL1  1  97.073    0 18  0 49  7.534
@@ -57,11 +57,12 @@ if __name__=="__main__":
     parser.add_argument("input_filename", type=str)
     parser.add_argument("output_filename", type=str)
     parser.add_argument("--vl1years", type=str, default="2,3")
-    parser.add_argument("--vl2years", type=str, default="3")
+    parser.add_argument("--vl2years", type=str, default="2")
 #    parser.add_argument("--startrow", type=int, default=0)
 #    parser.add_argument("--stoprow", type=int, default=None)
     parser.add_argument("--delimiter", type=str, default=',')
     parser.add_argument("--nmodes", type=int, default=5)
+    parser.add_argument("--remstoo", type=bool, default=False)
 
     args = parser.parse_args()
     
