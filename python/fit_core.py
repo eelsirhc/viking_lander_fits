@@ -52,7 +52,7 @@ def fit_data(data, nmodes):
     L_S = numpy.arange(360)
     fit_results=dict(L_S=L_S)
     if "vl1" in data:
-        print(data["L_S"].shape, data["vl1"].shape)
+        print("VL1: ",data["L_S"].shape, data["vl1"].shape)
         p1, success =  optimize.leastsq(errfunc, 
                         p0[:], 
                         args=(data["L_S"][1:-1].astype(numpy.float64), 
@@ -61,6 +61,7 @@ def fit_data(data, nmodes):
         fit_results["p1"]=p1
         fit_results["vl1"]=vl1
     if "vl2" in data:
+        print("VL2: ",data["L_S"].shape, data["vl2"].shape)
         p2, success =  optimize.leastsq(errfunc, 
                         p0[:], 
                         args=(data["L_S"][1:-1].astype(numpy.float64), 
@@ -68,5 +69,15 @@ def fit_data(data, nmodes):
         vl2 = fitfunc(p2, L_S)
         fit_results["p2"]=p2
         fit_results["vl2"]=vl2
+#monkey see, monkey do conversion to fit REMS (based on VL code):
+    if "msl" in data:
+        print("MSL: ",data["L_S"].shape, data["msl"].shape)
+        p3, success =  optimize.leastsq(errfunc, 
+                        p0[:], 
+                        args=(data["L_S"][1:-1].astype(numpy.float64), 
+                              data["msl"][1:-1].astype(numpy.float64)))
+        msl = fitfunc(p3, L_S)
+        fit_results["p3"]=p3
+        fit_results["msl"]=msl
 
     return     fit_results

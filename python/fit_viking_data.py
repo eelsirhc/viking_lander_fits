@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 #Christopher Lee, Ashima Research, 2013
 #http://starbase.jpl.nasa.gov/vl1-m-met-4-binned-p-t-v-corr-v1.0/vl_1001/data/
+#https://dataverse.scholarsportal.info/dataset.xhtml?persistentId=doi:10.5683/SP/BZDSFA
 from __future__ import print_function
-import numpy
 import asciitable
 import argparse
-from argh import ArghParser, arg
-from glob import glob
-from collections import OrderedDict as odict
-import os
+import sys
+from netCDF4 import Dataset
 from fit_core import *
 
 def fit_viking_data(input_file, vl1years="2,3",  vl2years="2", nmodes=5, rems_too=False):
@@ -52,17 +50,42 @@ def fit_viking_data(input_file, vl1years="2,3",  vl2years="2", nmodes=5, rems_to
     asciitable.write(d_data, "vl1.data",delimiter=",")
     return fit
 
+def fit_rems_data(input_file, nmodes=5):
+    """Read in Chris' netCDF version of the REMS data and fit it
+    """
+
+    try:
+      nc = Dataset(input_file,'r',format='NETCDF3')
+    except:
+      print("You probably do not have the requiredrems_aggregated.nc")
+      print("file located in the default location (or it's not in your")
+      print("specified location. Specify it with --rems_filename and")
+      print("grab it from:")
+      print("https://dataverse.scholarsportal.info/dataset.xhtml?persistentId=doi:10.5683/SP/BZDSFA")
+      sys.exit()
+
+    L_S = nc.variables["L_S"][:]
+    pres= nc.variables["ADJUSTED_PRESSURE_AMBIENT_TEMP"][:]
+
+    nc.close()
+
+    d_data = dict(L_S=L_S,msl=pres)
+    fit = fit_data(d_data, nmodes)
+    asciitable.write(d_data, "msl.data",delimiter=",")
+    return fit
+
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("input_filename", type=str)
-    parser.add_argument("output_filename", type=str)
+    parser.add_argument("--input_filename", type=str, default="vl_p.dat.txt")
+    parser.add_argument("--output_filename", type=str, default="lander_data.fit")
     parser.add_argument("--vl1years", type=str, default="2,3")
     parser.add_argument("--vl2years", type=str, default="2")
 #    parser.add_argument("--startrow", type=int, default=0)
 #    parser.add_argument("--stoprow", type=int, default=None)
     parser.add_argument("--delimiter", type=str, default=',')
     parser.add_argument("--nmodes", type=int, default=5)
-    parser.add_argument("--remstoo", type=bool, default=False)
+    parser.add_argument("--remstoo", action='store_true')
+    parser.add_argument("--rems_filename", type=str, default="/Users/mir/REMS/Chris/rems_aggregated.nc")
 
     args = parser.parse_args()
     
@@ -71,7 +94,20 @@ if __name__=="__main__":
                     vl1years = args.vl1years,
                     vl2years = args.vl2years
                     )
-    output = dict(mode=range(len(fit["p1"])), 
+
+    if(args.remstoo):
+        fit_rems = fit_rems_data(args.rems_filename,
+                        nmodes=args.nmodes,
+                        )
+        fit.update(fit_rems)
+
+    if(args.remstoo):
+        output = dict(mode=range(len(fit["p1"])), 
+                  p1=fit["p1"], 
+                  p2=fit["p2"],
+                  p3=fit["p3"])
+    else:    
+        output = dict(mode=range(len(fit["p1"])), 
                   p1=fit["p1"], 
                   p2=fit["p2"])
     target = open(args.output_filename, 'w')
