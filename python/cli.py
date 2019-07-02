@@ -41,7 +41,7 @@ def models(
         output_filename = "fit/{}.fit".format(simulation)
         if not os.path.exists(os.path.dirname(output_filename)):
             os.makedirs(os.path.dirname(output_filename))
-        fit.to_csv(output_filename)
+        fit.to_csv(output_filename, index_label="modes")
 
 @fit.command()
 @click.argument("filename")
@@ -58,12 +58,13 @@ def model(
         filename, startrow=startrow, stoprow=stoprow, delimiter=delimiter
     )
     # fit the file
-    fit = core.fit_data(data, nmodes)
+    fitted = core.fit_data(data, nmodes)
     # output the file
-    if not os.path.exists(os.path.dirname(output_filename)):
-        os.makedirs(os.path.dirname(output_filename))
+    directory = os.path.dirname(output_filename)
+    if not directory and directory!="":
+        os.makedirs(directory)
     #
-    fit.to_csv(output_filename)
+    fitted.to_csv(output_filename, index_label="modes")
 
 def csvi(s):
 	return [int(i) for i in s.split(",")]
@@ -81,30 +82,79 @@ def viking(filename, output_filename, lander, years, nmodes=5):
 
     data = core.read_viking(filename, lander, years)
 
-    fit = core.fit_data(data, nmodes)
+    fitted = core.fit_data(data, nmodes)
     # output the file
-    if not os.path.exists(os.path.dirname(output_filename)):
-        os.makedirs(os.path.dirname(output_filename))
-    fit = fit.rename(columns=dict(Pressure=lander.lower()))
+    directory = os.path.dirname(output_filename)
+    if not directory and directory!="":
+        os.makedirs(directory)
+    fitted = fitted.rename(columns=dict(Pressure=lander.lower()))
     
-    fit.to_csv(output_filename)
+    fitted.to_csv(output_filename, index_label="modes")
 
 @fit.command()
 @click.argument("parameter_filename",type=str)
 @click.argument("viking_filename", type=str)
 @click.option("--suffix", type=str, default="low")
-def jacobian(parameter_filename, viking_filename, suffix="low"):
+def parameters(parameter_filename, viking_filename, suffix="low"):
 	parameters = pd.read_csv(parameter_filename, comment="#",index_col=0)
-	viking = core.read_file(viking_filename)
-	
+	viking = core.convert_AP_to_SC(
+				core.read_file(viking_filename)
+				)
+	data = []
 	for simulation in parameters.index:
-		print(simulation)
-		if simulation.endswith(suffix):
-			data = core.read_file("fit/{}.fit".format(simulation))
-			print(data.columns)
+		if simulation.endswith(suffix) or\
+		   simulation=="base":
+			df = core.convert_AP_to_SC(
+					core.read_file("fit/{}.fit".format(simulation))
+					)[viking.columns]
+			cols = dict(zip(viking.columns,viking.columns))
+			for k in cols.keys():
+				if k not in ["L_S","modes"]:
+					cols[k]=simulation
+			
+			del cols["modes"]
+			df = df.set_index("modes")			
+			data.append(df.rename(columns=cols))
 
-	#core.read_file(pname)
-	viking_sc = core.convert_AP_to_SC(viking)
+	data = pd.concat(data,axis=1)
+	dy = data.copy()
+	for c in [x for x in data.columns if x != "base"]:
+		dy[c]-=dy["base"]
+	del dy["base"]
+
+	dx = parameters.T
+	for c in [x for x in dx.columns if x != "base"]:
+		dx[c]=(dx[c]-dx["base"])/dx["base"]
+	dx = dx[dy.columns].T
+	#print(dx)
+
+	
+	#print(viking)
+	#print(data)
+	delta = viking.set_index("modes")["vl1"]-data["base"]
+	#print(delta)
+	popt, pstd, dydx = core.least_square_inversion(dy,dx,delta)
+	
+	import matplotlib.pyplot as plt
+	plt.figure(figsize=(12,8))
+	ls = np.arange(360)
+	for d in data:
+		print(d)
+		print(data)
+		print(pd.DataFrame(data[d]))
+
+		yy = core.calc_AP_SC(ls,pd.DataFrame(data[d]))
+
+		plt.plot(ls,yy, label=d)
+	plt.savefig("a.png")
+	print( data["base"])
+	print( data["base"].shape, dydx.values.shape, popt.shape)
+	print( data["base"]+np.dot(dydx.values,popt))
+	#ls = np.arange(360)
+	#core.calc_AP_SC(ls,res[0])
+
+from plotting import register_plots
+register_plots(cli)
 
 if __name__ == "__main__":
     cli()

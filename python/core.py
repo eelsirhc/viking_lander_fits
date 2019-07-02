@@ -1,6 +1,6 @@
 #core
 import pandas as pd
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, leastsq
 import numpy as np
 
 def fitfunc(x,*p):
@@ -16,17 +16,25 @@ def convert_AP_to_SC(data):
     """Convert amplitude phase cosine waves to cosine, sine."""
     #find the number of nodes
     modes = ([int(d[5:]) for d in data.modes if d.startswith("Amode")])
-    df = data.T
-    for m in modes:
-        if "Amode{:02d}".format(m) in df:
-            df["Smode{:02d}".format(m)] = df["Amode{:02d}".format(m)]*np.sin(np.deg2rad(df["Pmode{:02d}".format(m)]))
-            df["Cmode{:02d}".format(m)] = df["Amode{:02d}".format(m)]*np.cos(np.deg2rad(df["Pmode{:02d}".format(m)]))
-            del df["Amode{:02d}".format(m)]
-            del df["Pmode{:02d}".format(m)]
-    df = df.T
-    print(df)
+    df = data.set_index("modes").T
+    for mode in ([d for d in data.modes if d.startswith("Amode")]):
+        m = int(mode[5:])
+        df["Smode{:02d}".format(m)] = df["Amode{:02d}".format(m)]*np.sin(m*np.deg2rad(df["Pmode{:02d}".format(m)]))
+        df["Cmode{:02d}".format(m)] = df["Amode{:02d}".format(m)]*np.cos(m*np.deg2rad(df["Pmode{:02d}".format(m)]))
+        del df["Amode{:02d}".format(m)]
+        del df["Pmode{:02d}".format(m)]
+    df = df.T.reset_index()
     return df
 
+def calc_AP_SC(ls, data):
+    df = data.T
+    y = np.zeros_like(ls)+df["Mean"].values
+
+    for mode in ([d for d in data.index if d.startswith("Smode")]):
+        m = int(mode[5:])
+        y = y + (df["Smode{:02d}".format(m)].values*np.sin(m*np.deg2rad(ls)) + 
+        df["Cmode{:02d}".format(m)].values*np.sin(m*np.deg2rad(ls)))
+    return y
 
 def read_viking(filename, lander, years):
     df = pd.read_csv(
@@ -76,7 +84,31 @@ def fit_data(data, nmodes):
             sigma=np.ones_like(data["L_S"].values)+5)
         pstd = np.sqrt(np.diag(pcov))
         fit.append(popt)
-    print(np.array(fit).T.shape, len(use_columns))
-    print(use_columns)
-    return pd.DataFrame(np.array(fit).T, columns=['modes']+use_columns,index=row_names)
-    return fit
+    return pd.DataFrame(np.array(fit).T, columns=use_columns,index=row_names)
+    #return fit
+
+def least_square_inversion(dy,dx,B):
+    """Invert Ax=B where A=dy/dx, B=B."""
+    if any((dx>0).sum(axis=1).values > 1):
+        raise ValueError("Unclear perturbations.")
+
+    dx_column = dx.max(axis=1)
+    dydx = dy.copy()
+    for c in dydx.columns:
+        dydx[c] = dy[c]/dx_column[c]
+
+    
+    def fitx(x,*p):
+        val = 0.0
+        for n,m in zip(p,x):
+            val=val+n*m
+        return val
+    p0 = np.zeros(dx_column.size)+0.1
+    popt, pcov = curve_fit(fitx, 
+            dydx.values.T,
+            B.values,
+            p0=p0)
+
+    pstd = np.sqrt(np.diag(pcov))
+
+    return popt, pstd,dydx
