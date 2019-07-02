@@ -4,12 +4,10 @@
 #that the python code runscript.py will process to generate the experiments
 name,massair_target,sh_co2ice_albedo,sh_co2ice_emiss,nh_co2ice_albedo,nh_co2ice_emiss
 base,2.83e16, 0.45, 0.79, 0.63, 0.50  
-co2_low, 2.73e16, 0.45, 0.79, 0.63, 0.50  
 sh_albedo_low,2.83e16, 0.40, 0.79, 0.63, 0.50  
 sh_emiss_low,2.83e16, 0.45, 0.74, 0.63, 0.50  
 nh_albedo_low,2.83e16, 0.45, 0.79, 0.58, 0.50  
 nh_emiss_low,2.83e16, 0.45, 0.79, 0.63, 0.45  
-co2_high,2.93e16, 0.45, 0.79, 0.63, 0.50  
 sh_albedo_high,2.83e16, 0.50, 0.79, 0.63, 0.50  
 sh_emiss_high,2.83e16, 0.45, 0.84, 0.63, 0.50  
 nh_albedo_high,2.83e16, 0.45, 0.79, 0.68, 0.50  
