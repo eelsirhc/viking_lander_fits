@@ -9,8 +9,19 @@ import matplotlib.pyplot as plt
 
 @click.group()
 def plot():
-    pass
+    """plot command group
 
+    Sets up the plot cli command.
+    Args:
+        N/A
+
+    Returns:
+        N/A
+
+    Raises:
+        N/A
+    """
+    pass
 
 
 def csv(s):
